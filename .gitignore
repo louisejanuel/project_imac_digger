@@ -1,0 +1,20 @@
+# Dossier de build
+/build/
+
+# Fichiers temporaires de CMake
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Binaires
+*.exe
+*.out
+*.o
+*.obj
+
+# Fichiers de logs et autres
+*.log
+*.user
+*.suo
+*.vcxproj*
