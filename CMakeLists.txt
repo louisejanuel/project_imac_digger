@@ -10,6 +10,7 @@ add_executable(digger
     src/renderer.cpp
     src/mapGenerator.cpp
 )
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 target_include_directories(digger PRIVATE ${PROJECT_SOURCE_DIR}/include)
 target_link_libraries(digger glfw ${OPENGL_LIBRARIES})

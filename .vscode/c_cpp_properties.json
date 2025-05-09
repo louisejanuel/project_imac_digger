@@ -1,0 +1,18 @@
+{
+    "configurations": [
+      {
+        "name": "Win32",
+        "includePath": [
+          "${workspaceFolder}/src",
+          "${workspaceFolder}/lib",              // <-- ajoute ce chemin
+          "${workspaceFolder}/lib/glfw/include"  // <-- adapte selon la structure
+        ],
+        "defines": [],
+        "compilerPath": "C:\\Winlibs\\winlibs-x86_64-posix-seh-gcc-14.2.0-llvm-18.1.8-mingw-w64ucrt-12.0.0-r1\\mingw64\\bin\\gcc.exe",
+        "cStandard": "c11",
+        "cppStandard": "c++17",
+        "intelliSenseMode": "windows-gcc-x64"
+      }
+    ],
+    "version": 4
+  }
