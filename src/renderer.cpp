@@ -1,4 +1,4 @@
-#include "Renderer.hpp"
+#include "renderer.hpp"
 #include <GLFW/glfw3.h>
 
 Renderer::Renderer(int width, int height, const MapGenerator& mapGen)

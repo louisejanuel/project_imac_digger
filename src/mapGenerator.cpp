@@ -1,4 +1,4 @@
-#include "MapGenerator.hpp"
+#include "mapGenerator.hpp"
 #include <iostream>
 #include <cstdlib>
 #include <ctime>

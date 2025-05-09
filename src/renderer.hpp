@@ -1,5 +1,5 @@
 #pragma once
-#include "MapGenerator.hpp"
+#include "mapGenerator.hpp"
 
 class Renderer {
 public:
