@@ -1,16 +1,19 @@
-cmake_minimum_required(VERSION 3.16)
-project(IMAC_project_digger)
+cmake_minimum_required(VERSION 3.20)
+project(imac_digger)
 
-set(CMAKE_CXX_STANDARD 17)
+file(GLOB_RECURSE MY_SOURCES CONFIGURE_DEPENDS src/*)
+add_executable(${PROJECT_NAME} ${MY_SOURCES})
+target_include_directories(${PROJECT_NAME} PRIVATE src/)
 
-find_package(OpenGL REQUIRED)
+# Set the folder where the executable will be created
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/${CMAKE_BUILD_TYPE})
 
-add_executable(digger
-    src/main.cpp
-    src/renderer.cpp
-    src/mapGenerator.cpp
-)
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+# Librairies
 
-target_include_directories(digger PRIVATE ${PROJECT_SOURCE_DIR}/include)
-target_link_libraries(digger glfw ${OPENGL_LIBRARIES})
+# ---Add glbasimac---
+add_subdirectory(lib/glbasimac)
+target_link_libraries(${PROJECT_NAME} PRIVATE glbasimac)
+
+include(CmakeUtils/files_and_folders.cmake)
+Cool__target_copy_folder(${PROJECT_NAME} "assets")
