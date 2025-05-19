@@ -47,14 +47,6 @@ int MapGenerator::countFullNeighbors(int x, int y) const {
     return count;
 }
 
-void MapGenerator::printMap() const {
-    for (const auto& row : map) {
-        for (int cell : row)
-            std::cout << (cell ? "#" : ".");
-        std::cout << '\n';
-    }
-}
-
 const std::vector<std::vector<int>>& MapGenerator::getMap() const {
     return map;
 }

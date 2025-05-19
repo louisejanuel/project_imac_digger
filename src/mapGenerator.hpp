@@ -5,7 +5,6 @@ class MapGenerator {
 public:
     MapGenerator(int width, int height, int fillProb);
     void generate(int iterations);
-    void printMap() const;
     const std::vector<std::vector<int>>& getMap() const;
 
 private:
