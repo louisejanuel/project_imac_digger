@@ -1,13 +1,11 @@
 #pragma once
 #include <vector>
 
-class MapGenerator {
-public:
+struct MapGenerator {
     MapGenerator(int width, int height, int fillProb);
     void generate(int iterations);
     const std::vector<std::vector<int>>& getMap() const;
 
-private:
     int width, height, fillProbability;
     std::vector<std::vector<int>> map;
 
