@@ -1,5 +1,6 @@
 # Dossier de build
 /build/
+/bin/
 
 # Fichiers temporaires de CMake
 CMakeFiles/
