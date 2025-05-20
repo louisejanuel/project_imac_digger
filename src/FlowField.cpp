@@ -2,60 +2,52 @@
 #include <queue>
 #include <limits>
 
-FlowField::FlowField(Grid& g) : grid(g) {
-    directions.resize(grid.getHeight(), std::vector<Vec2>(grid.getWidth(), {0, 0}));
+FlowField::FlowField(const std::vector<std::vector<int>>& map)
+    : map(map) {
+    int h = map.size(), w = map[0].size();
+    distance.resize(h, std::vector<int>(w, -1));
+    directions.resize(h, std::vector<Vec2>(w, {0, 0}));
 }
 
 void FlowField::reset() {
-    for (int y = 0; y < grid.getHeight(); ++y)
-        for (int x = 0; x < grid.getWidth(); ++x) {
-            grid.at(x, y).distance = -1;
+    int h = map.size(), w = map[0].size();
+    for (int y = 0; y < h; ++y)
+        for (int x = 0; x < w; ++x) {
+            distance[y][x] = -1;
             directions[y][x] = {0, 0};
         }
 }
 
+bool FlowField::isWalkable(int x, int y) const {
+    return y >= 0 && x >= 0 && y < map.size() && x < map[0].size() && map[y][x] == 0;
+}
+
 void FlowField::compute(int targetX, int targetY) {
     reset();
+    std::queue<std::pair<int, int>> queue;
+    distance[targetY][targetX] = 0;
+    queue.push({targetX, targetY});
 
-    std::queue<Cell*> queue;
-    Cell& target = grid.at(targetX, targetY);
-    target.distance = 0;
-    queue.push(&target);
-
-    // BFS to compute distances
     while (!queue.empty()) {
-        Cell* current = queue.front(); queue.pop();
-
+        auto [x, y] = queue.front(); queue.pop();
         for (const auto& dir : neighbors) {
-            int nx = current->x + dir.dx;
-            int ny = current->y + dir.dy;
-
-            if (grid.isWalkable(nx, ny)) {
-                Cell& neighbor = grid.at(nx, ny);
-                if (neighbor.distance == -1 || neighbor.distance > current->distance + 1) {
-                    neighbor.distance = current->distance + 1;
-                    queue.push(&neighbor);
-                }
+            int nx = x + dir.dx, ny = y + dir.dy;
+            if (isWalkable(nx, ny) && (distance[ny][nx] == -1 || distance[ny][nx] > distance[y][x] + 1)) {
+                distance[ny][nx] = distance[y][x] + 1;
+                queue.push({nx, ny});
             }
         }
     }
 
-    // choisir direction
-    for (int y = 0; y < grid.getHeight(); ++y) {
-        for (int x = 0; x < grid.getWidth(); ++x) {
-            if (!grid.isWalkable(x, y)) continue;
-
+    for (int y = 0; y < map.size(); ++y) {
+        for (int x = 0; x < map[0].size(); ++x) {
+            if (!isWalkable(x, y)) continue;
             int minDist = std::numeric_limits<int>::max();
-            Vec2 bestDir{0, 0};
-
+            Vec2 bestDir = {0, 0};
             for (const auto& dir : neighbors) {
-                int nx = x + dir.dx;
-                int ny = y + dir.dy;
-                if (!grid.isWalkable(nx, ny)) continue;
-
-                int dist = grid.at(nx, ny).distance;
-                if (dist >= 0 && dist < minDist) {
-                    minDist = dist;
+                int nx = x + dir.dx, ny = y + dir.dy;
+                if (isWalkable(nx, ny) && distance[ny][nx] >= 0 && distance[ny][nx] < minDist) {
+                    minDist = distance[ny][nx];
                     bestDir = dir;
                 }
             }
@@ -65,7 +57,7 @@ void FlowField::compute(int targetX, int targetY) {
 }
 
 Vec2 FlowField::getDirection(int x, int y) const {
-    if (x < 0 || y < 0 || y >= static_cast<int>(directions.size()) || x >= static_cast<int>(directions[0].size()))
+    if (x < 0 || y < 0 || y >= directions.size() || x >= directions[0].size())
         return {0, 0};
     return directions[y][x];
 }

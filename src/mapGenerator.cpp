@@ -39,6 +39,7 @@ int MapGenerator::countFullNeighbors(int x, int y) const {
     int count = 0;
     for (int j = -1; j <= 1; j++)
         for (int i = -1; i <= 1; i++) {
+            // if (i == 0 && j == 0) continue;
             int nx = x + i, ny = y + j;
             if (nx >= 0 && ny >= 0 && nx < width && ny < height)
                 if (map[ny][nx] == 1)
