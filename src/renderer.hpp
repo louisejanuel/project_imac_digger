@@ -1,11 +1,12 @@
 #pragma once
 #include "mapGenerator.hpp"
+#include "FlowField.hpp"
 
-struct Renderer {
-    Renderer(int width, int height, const MapGenerator& mapGen);
+struct Renderer
+{
+    Renderer(int width, int height, const MapGenerator &mapGen, FlowField &flowfield);
     void run();
-
-    const MapGenerator& mapGen;
     int winWidth, winHeight;
-    void render();
+    const MapGenerator &mapGen;
+    FlowField &flowfield;
 };
