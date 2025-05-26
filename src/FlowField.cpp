@@ -77,11 +77,33 @@ void FlowField::compute(int targetX, int targetY)
     }
 }
 
-Vec2 FlowField::getDirection(int x, int y) const
+Vec2 FlowField::getDirection(float fx, float fy) const
 {
-    if (x < 0 || y < 0 || y >= directions.size() || x >= directions[0].size())
+    int x0 = int(fx), y0 = int(fy);
+    int x1 = x0 + 1, y1 = y0 + 1;
+
+    if (!isWalkable(x0, y0))
         return {0, 0};
-    return directions[y][x];
+
+    float tx = fx - x0;
+    float ty = fy - y0;
+
+    Vec2 d00 = getDirection(x0, y0);
+    Vec2 d10 = getDirection(x1, y0);
+    Vec2 d01 = getDirection(x0, y1);
+    Vec2 d11 = getDirection(x1, y1);
+
+    float dx = (1 - tx) * (1 - ty) * d00.dx +
+               tx * (1 - ty) * d10.dx +
+               (1 - tx) * ty * d01.dx +
+               tx * ty * d11.dx;
+
+    float dy = (1 - tx) * (1 - ty) * d00.dy +
+               tx * (1 - ty) * d10.dy +
+               (1 - tx) * ty * d01.dy +
+               tx * ty * d11.dy;
+
+    return {dx, dy};
 }
 
 void FlowField::updateEnemies(float deltaTime)
@@ -89,7 +111,7 @@ void FlowField::updateEnemies(float deltaTime)
     for (auto &enemy : enemies)
     {
         int cx = int(enemy.x), cy = int(enemy.y);
-        Vec2 dir = getDirection(cx, cy);
+        Vec2 dir = getDirection(enemy.x, enemy.y);
         enemy.x += dir.dx * deltaTime * enemy.speed;
         enemy.y += dir.dy * deltaTime * enemy.speed;
     }
