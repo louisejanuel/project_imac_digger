@@ -13,7 +13,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 
 # ---Add glbasimac---
 add_subdirectory(lib/glbasimac)
-target_link_libraries(${PROJECT_NAME} PRIVATE glbasimac)
+target_link_libraries(${PROJECT_NAME} PRIVATE glbasimac glu32)
 
 include(CmakeUtils/files_and_folders.cmake)
 Cool__target_copy_folder(${PROJECT_NAME} "assets")
