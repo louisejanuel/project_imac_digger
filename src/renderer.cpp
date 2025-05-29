@@ -4,7 +4,7 @@
 
 Renderer::Renderer(int screenW, int screenH, MapGenerator &mapGen, FlowField &flow)
     : width(screenW), height(screenH), map(mapGen), flowfield(flow),
-      player(2.0f, 2.0f, 1.0f) // Position initiale (x=2, y=2), taille 1x1
+      player(2.0f, 2.0f, 0.9f) // Position initiale (x=2, y=2), taille 1x1
 {
     if (!glfwInit())
     {
@@ -56,16 +56,20 @@ void Renderer::run()
     glfwTerminate();
 }
 
-void drawMap(const std::vector<std::vector<int>> &mapData)
-{
-    for (int y = 0; y < mapData.size(); ++y)
-    {
-        for (int x = 0; x < mapData[y].size(); ++x)
-        {
-            if (mapData[y][x] == 1)
-                glColor3f(0.0f, 0.0f, 0.0f); // Mur = noir
-            else
-                glColor3f(1.0f, 1.0f, 1.0f); // Sol = blanc
+void drawMap(const std::vector<std::vector<int>>& map) {
+    int height = map.size();
+    int width = map[0].size();
+
+    for (int y = 0; y < height; ++y) {
+        for (int x = 0; x < width; ++x) {
+            switch (map[y][x]) {
+                case EMPTY:    glColor3f(1.0f, 1.0f, 1.0f); break; // blanc
+                case FULL:     glColor3f(0.5f, 0.25f, 0.0f); break; // marron
+                case OBJECT:   glColor3f(1.0f, 0.0f, 1.0f); break; // rose
+                case OBSTACLE: glColor3f(0.0f, 0.0f, 0.0f); break; // noir
+                case TRAP:     glColor3f(0.0f, 0.0f, 1.0f); break; // bleu
+                default:       glColor3f(0.8f, 0.8f, 0.8f); break;
+            }
 
             glBegin(GL_QUADS);
             glVertex2f(x, y);
