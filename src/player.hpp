@@ -1,6 +1,13 @@
 #pragma once
 #include <vector>
 
+enum Direction {
+    RIGHT,
+    LEFT,
+    UP,
+    DOWN
+};
+
 struct Player {
     int score;
     Player(float x, float y, float size);
@@ -11,6 +18,7 @@ struct Player {
     float x, y;
     float speed;
     float size;
+    Direction currentDirection; // Direction actuelle du joueur
 
     bool willCollide(float newX, float newY, const std::vector<std::vector<int>>& map);
 };

@@ -6,7 +6,7 @@
 #include <GLFW/glfw3.h>
 
 Player::Player(float x, float y, float size)
-    : x(x), y(y), size(size), speed(5.0f), score(0) {}
+    : x(x), y(y), size(size), speed(5.0f), score(0), currentDirection(DOWN) {}
 
 void Player::update(float deltaTime, std::vector<std::vector<int>> &map)
 {
@@ -14,107 +14,87 @@ void Player::update(float deltaTime, std::vector<std::vector<int>> &map)
     float newY = y;
 
     if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_D) == GLFW_PRESS)
+    {
         newX += speed * deltaTime;
+        currentDirection = RIGHT; // Mettre à jour la direction
+    }
     if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_A) == GLFW_PRESS)
+    {
         newX -= speed * deltaTime;
+        currentDirection = LEFT; // Mettre à jour la direction
+    }
     if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_S) == GLFW_PRESS)
+    {
         newY += speed * deltaTime;
+        currentDirection = DOWN; // Mettre à jour la direction
+    }
     if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_W) == GLFW_PRESS)
+    {
         newY -= speed * deltaTime;
+        currentDirection = UP; // Mettre à jour la direction
+    }
 
     // Si pas de mur => déplacement
     if (!willCollide(newX, y, map))
         x = newX;
-    else
-    {
-        // Vérification des cases adjacentes pour miner
-        int mx = static_cast<int>(x);
-        int my = static_cast<int>(y);
-
-        if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_E) == GLFW_PRESS)
-        {
-            // Vérifie la case à droite
-            if (mx + 1 < map[0].size() && map[my][mx + 1] == FULL)
-            {
-                map[my][mx + 1] = EMPTY;
-            }
-            // Vérifie la case à gauche
-            else if (mx - 1 >= 0 && map[my][mx - 1] == FULL)
-            {
-                map[my][mx - 1] = EMPTY;
-            }
-            // Vérifie la case en bas
-            else if (my + 1 < map.size() && map[my + 1][mx] == FULL)
-            {
-                map[my + 1][mx] = EMPTY;
-            }
-            // Vérifie la case en haut
-            else if (my - 1 >= 0 && map[my - 1][mx] == FULL)
-            {
-                map[my - 1][mx] = EMPTY;
-            }
-        }
-    }
-
     if (!willCollide(x, newY, map))
         y = newY;
-    else
+
+    // Miner uniquement dans la direction actuelle
+    if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_E) == GLFW_PRESS)
     {
-        // Vérification des cases adjacentes pour miner
         int mx = static_cast<int>(x);
         int my = static_cast<int>(y);
 
-        if (glfwGetKey(glfwGetCurrentContext(), GLFW_KEY_E) == GLFW_PRESS)
+        switch (currentDirection)
         {
-            // Vérifie la case à droite
+        case RIGHT:
             if (mx + 1 < map[0].size() && map[my][mx + 1] == FULL)
             {
                 map[my][mx + 1] = EMPTY;
             }
-            // Vérifie la case à gauche
-            else if (mx - 1 >= 0 && map[my][mx - 1] == FULL)
+            break;
+        case LEFT:
+            if (mx - 1 >= 0 && map[my][mx - 1] == FULL)
             {
                 map[my][mx - 1] = EMPTY;
             }
-            // Vérifie la case en bas
-            else if (my + 1 < map.size() && map[my + 1][mx] == FULL)
+            break;
+        case DOWN:
+            if (my + 1 < map.size() && map[my + 1][mx] == FULL)
             {
                 map[my + 1][mx] = EMPTY;
             }
-            // Vérifie la case en haut
-            else if (my - 1 >= 0 && map[my - 1][mx] == FULL)
+            break;
+        case UP:
+            if (my - 1 >= 0 && map[my - 1][mx] == FULL)
             {
                 map[my - 1][mx] = EMPTY;
             }
+            break;
         }
     }
 
+    // Gestion des objets et des pièges (inchangée)
     int gridX = static_cast<int>(x);
     int gridY = static_cast<int>(y);
 
-    // Objet
     if (map[gridY][gridX] == OBJECT)
     {
         map[gridY][gridX] = EMPTY;
         score++;
         std::cout << "Objet ramassé ! Score : " << score << "/" << 15 << "\n";
 
-        // Vérifier si tous les objets ont été ramassés
         if (score == 15)
         {
             std::cout << "Félicitations ! Vous avez ramassé tous les objets et gagné !\n";
         }
     }
 
-    // Piège
     if (map[gridY][gridX] == TRAP)
     {
         std::cout << "Tu es tombé dans un piège !\n";
-
-        // Afficher l'écran de Game Over
         showGameOver();
-
-        // Quitter le jeu après l'écran de Game Over
         glfwSetWindowShouldClose(glfwGetCurrentContext(), GLFW_TRUE);
     }
 }
