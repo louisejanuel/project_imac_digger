@@ -4,7 +4,7 @@
 
 Renderer::Renderer(int screenW, int screenH, MapGenerator &mapGen, FlowField &flow)
     : width(screenW), height(screenH), map(mapGen), flowfield(flow),
-      player(2.0f, 2.0f, 0.9f) // Position initiale (x=2, y=2), taille 1x1
+      player(0.0f, 0.0f, 0.99f)
 {
     if (!glfwInit())
     {
@@ -30,6 +30,21 @@ Renderer::Renderer(int screenW, int screenH, MapGenerator &mapGen, FlowField &fl
     glLoadIdentity();
 
     lastFrameTime = glfwGetTime();
+
+    // Trouver une position aléatoire pour le joueur sur une case EMPTY
+    const std::vector<std::vector<int>> &mapData = map.getMap();
+    int mapHeight = mapData.size();
+    int mapWidth = mapData[0].size();
+
+    int playerX, playerY;
+    do
+    {
+        playerX = rand() % mapWidth;
+        playerY = rand() % mapHeight;
+    } while (mapData[playerY][playerX] != EMPTY);
+
+    // Initialiser le joueur à la position trouvée
+    player = Player(static_cast<float>(playerX), static_cast<float>(playerY), 0.99f);
 }
 
 void Renderer::run()
