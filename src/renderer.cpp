@@ -59,7 +59,7 @@ void Renderer::run()
         glLoadIdentity();
 
         drawMap(map.getMap());
-        std::vector<std::vector<int>> &mapData = const_cast<std::vector<std::vector<int>>&>(map.getMap());
+        std::vector<std::vector<int>> &mapData = const_cast<std::vector<std::vector<int>> &>(map.getMap());
         player.update(deltaTime, mapData);
         // player.update(deltaTime, map.getMap());
         player.draw();
@@ -71,19 +71,35 @@ void Renderer::run()
     glfwTerminate();
 }
 
-void drawMap(const std::vector<std::vector<int>>& map) {
+void drawMap(const std::vector<std::vector<int>> &map)
+{
     int height = map.size();
     int width = map[0].size();
 
-    for (int y = 0; y < height; ++y) {
-        for (int x = 0; x < width; ++x) {
-            switch (map[y][x]) {
-                case EMPTY:    glColor3f(1.0f, 1.0f, 1.0f); break; // blanc
-                case FULL:     glColor3f(0.5f, 0.25f, 0.0f); break; // marron
-                case OBJECT:   glColor3f(1.0f, 0.0f, 1.0f); break; // rose
-                case OBSTACLE: glColor3f(0.0f, 0.0f, 0.0f); break; // noir
-                case TRAP:     glColor3f(0.0f, 0.0f, 1.0f); break; // bleu
-                default:       glColor3f(0.8f, 0.8f, 0.8f); break;
+    for (int y = 0; y < height; ++y)
+    {
+        for (int x = 0; x < width; ++x)
+        {
+            switch (map[y][x])
+            {
+            case EMPTY:
+                glColor3f(1.0f, 1.0f, 1.0f);
+                break; // blanc
+            case FULL:
+                glColor3f(0.5f, 0.25f, 0.0f);
+                break; // marron
+            case OBJECT:
+                glColor3f(1.0f, 0.0f, 1.0f);
+                break; // rose
+            case OBSTACLE:
+                glColor3f(0.0f, 0.0f, 0.0f);
+                break; // noir
+            case TRAP:
+                glColor3f(0.0f, 0.0f, 1.0f);
+                break; // bleu
+            default:
+                glColor3f(0.8f, 0.8f, 0.8f);
+                break;
             }
 
             glBegin(GL_QUADS);
