@@ -1,5 +1,6 @@
 #include "player.hpp"
 #include "mapGenerator.hpp"
+#include "gameOver.hpp"
 #include <iostream>
 #include <GL/glu.h>
 #include <GLFW/glfw3.h>
@@ -104,10 +105,14 @@ void Player::update(float deltaTime, std::vector<std::vector<int>> &map)
     }
 
     // Piège
-    if (map[gridY][gridX] == TRAP)
-    {
+    if (map[gridY][gridX] == TRAP) {
         std::cout << "Tu es tombé dans un piège !\n";
-        // gérer la mort, ou reset du joueur
+
+        // Afficher l'écran de Game Over
+        showGameOver();
+
+        // Quitter le jeu après l'écran de Game Over
+        glfwSetWindowShouldClose(glfwGetCurrentContext(), GLFW_TRUE);
     }
 }
 
