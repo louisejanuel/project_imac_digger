@@ -58,7 +58,20 @@ int MapGenerator::countFullNeighbors(int x, int y) const
 
 void MapGenerator::addFeatures()
 {
-    totalObjects = 0; // Réinitialiser le compteur d'objets
+    totalObjects = 0;
+    // Placer exactement 15 objets de manière aléatoire
+    while (totalObjects < 15)
+    {
+        int x = rand() % width;  // Coordonnée X aléatoire
+        int y = rand() % height; // Coordonnée Y aléatoire
+
+        if (map[y][x] == EMPTY) 
+        {
+            map[y][x] = OBJECT;
+            totalObjects++;
+        }
+    }
+
     for (int y = 0; y < height; ++y)
     {
         for (int x = 0; x < width; ++x)
@@ -70,12 +83,7 @@ void MapGenerator::addFeatures()
 
             if (map[y][x] == EMPTY)
             {
-                if (rand() % 100 < 0.5 && totalObjects < 15)
-                { // Limiter à 15 objets
-                    map[y][x] = OBJECT;
-                    totalObjects++;
-                }
-                else if (rand() % 100 < 0.10)
+                if (rand() % 100 < 0.10)
                 {
                     map[y][x] = TRAP;
                 }

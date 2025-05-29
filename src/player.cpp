@@ -92,11 +92,15 @@ void Player::update(float deltaTime, std::vector<std::vector<int>> &map)
     int gridY = static_cast<int>(y);
 
     // Objet
-    if (map[gridY][gridX] == OBJECT)
-    {
+    if (map[gridY][gridX] == OBJECT) {
         map[gridY][gridX] = EMPTY;
-        std::cout << "Objet ramassé !\n";
-        // score++; etc.
+        score++;
+        std::cout << "Objet ramassé ! Score : " << score << "/" << 15 << "\n";
+    
+        // Vérifier si tous les objets ont été ramassés
+        if (score == 15) {
+            std::cout << "Félicitations ! Vous avez ramassé tous les objets et gagné !\n";
+        }
     }
 
     // Piège
