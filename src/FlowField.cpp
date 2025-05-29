@@ -103,7 +103,7 @@ Vec2 FlowField::getDirection(float fx, float fy) const
                (1 - tx) * ty * d01.dy +
                tx * ty * d11.dy;
 
-    return {dx, dy};
+    return {static_cast<int>(dx), static_cast<int>(dy)};
 }
 
 void FlowField::updateEnemies(float deltaTime)
