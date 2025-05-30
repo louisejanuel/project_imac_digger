@@ -5,7 +5,7 @@
 
 struct Vec2
 {
-    int dx, dy;
+    float dx, dy;
 };
 
 struct Enemy
@@ -19,8 +19,6 @@ struct FlowField
     FlowField(const std::vector<std::vector<int>> &map);
     void compute(int targetX, int targetY);
     Vec2 getDirection(float fx, float fy) const;
-
-    // void loadTexture(const std::string &path);
 
     const std::vector<std::vector<int>> &map;
     std::vector<std::vector<int>> distance;

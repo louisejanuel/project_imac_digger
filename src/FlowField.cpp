@@ -13,7 +13,6 @@ FlowField::FlowField(const std::vector<std::vector<int>> &map)
     directions.resize(h, std::vector<Vec2>(w, {0, 0}));
 }
 
-
 void FlowField::reset()
 {
     int h = map.size(), w = map[0].size();
@@ -69,7 +68,6 @@ void FlowField::compute(int targetX, int targetY)
                     bestDir = dir;
                 }
             }
-            // Inversion ici
             bestDir.dx = -bestDir.dx;
             bestDir.dy = -bestDir.dy;
             directions[y][x] = bestDir;
@@ -88,13 +86,11 @@ Vec2 FlowField::getDirection(float fx, float fy) const
     float tx = fx - x0;
     float ty = fy - y0;
 
-    // Récupérer les directions des 4 coins
     Vec2 d00 = directions[y0][x0];
     Vec2 d10 = (x1 < map[0].size()) ? directions[y0][x1] : d00;
     Vec2 d01 = (y1 < map.size()) ? directions[y1][x0] : d00;
     Vec2 d11 = (x1 < map[0].size() && y1 < map.size()) ? directions[y1][x1] : d00;
 
-    // Interpolation bilinéaire des directions
     float dx = (1 - tx) * (1 - ty) * d00.dx +
                tx * (1 - ty) * d10.dx +
                (1 - tx) * ty * d01.dx +
@@ -105,9 +101,5 @@ Vec2 FlowField::getDirection(float fx, float fy) const
                (1 - tx) * ty * d01.dy +
                tx * ty * d11.dy;
 
-    // Normalisation possible (optionnel)
-    // float len = sqrt(dx*dx + dy*dy);
-    // if(len > 0) { dx /= len; dy /= len; }
-
-    return {static_cast<int>(dx), static_cast<int>(dy)};
+    return {dx, dy};
 }
