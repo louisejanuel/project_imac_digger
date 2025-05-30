@@ -2,6 +2,7 @@
 #include "mapGenerator.hpp"
 #include "flowfield.hpp"
 #include "player.hpp"
+#include "ennemis.hpp"
 #include <GLFW/glfw3.h>
 
 struct Renderer {
@@ -10,10 +11,10 @@ struct Renderer {
     MapGenerator& map;
     FlowField& flowfield;
     Player player;
-
+    Ennemi ennemi;
     float lastFrameTime;
 
-    Renderer(int screenW, int screenH, MapGenerator& mapGen, FlowField& flow);
+    Renderer(int screenW, int screenH, MapGenerator& mapGen, FlowField& flow, Ennemi ennemi);
     void run();
 };
 

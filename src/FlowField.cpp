@@ -11,8 +11,8 @@ FlowField::FlowField(const std::vector<std::vector<int>> &map)
     int h = map.size(), w = map[0].size();
     distance.resize(h, std::vector<int>(w, -1));
     directions.resize(h, std::vector<Vec2>(w, {0, 0}));
-    enemies.push_back({1.5f, 1.5f, 1.0f});
 }
+
 
 void FlowField::reset()
 {
@@ -88,11 +88,13 @@ Vec2 FlowField::getDirection(float fx, float fy) const
     float tx = fx - x0;
     float ty = fy - y0;
 
-    Vec2 d00 = getDirection(x0, y0);
-    Vec2 d10 = getDirection(x1, y0);
-    Vec2 d01 = getDirection(x0, y1);
-    Vec2 d11 = getDirection(x1, y1);
+    // Récupérer les directions des 4 coins
+    Vec2 d00 = directions[y0][x0];
+    Vec2 d10 = (x1 < map[0].size()) ? directions[y0][x1] : d00;
+    Vec2 d01 = (y1 < map.size()) ? directions[y1][x0] : d00;
+    Vec2 d11 = (x1 < map[0].size() && y1 < map.size()) ? directions[y1][x1] : d00;
 
+    // Interpolation bilinéaire des directions
     float dx = (1 - tx) * (1 - ty) * d00.dx +
                tx * (1 - ty) * d10.dx +
                (1 - tx) * ty * d01.dx +
@@ -103,64 +105,9 @@ Vec2 FlowField::getDirection(float fx, float fy) const
                (1 - tx) * ty * d01.dy +
                tx * ty * d11.dy;
 
+    // Normalisation possible (optionnel)
+    // float len = sqrt(dx*dx + dy*dy);
+    // if(len > 0) { dx /= len; dy /= len; }
+
     return {static_cast<int>(dx), static_cast<int>(dy)};
-}
-
-void FlowField::updateEnemies(float deltaTime)
-{
-    for (auto &enemy : enemies)
-    {
-        int cx = int(enemy.x), cy = int(enemy.y);
-        Vec2 dir = getDirection(enemy.x, enemy.y);
-        enemy.x += dir.dx * deltaTime * enemy.speed;
-        enemy.y += dir.dy * deltaTime * enemy.speed;
-    }
-}
-
-void FlowField::drawEnemies()
-{
-    if (!enemyTexture)
-        return;
-
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, enemyTexture);
-
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    for (const auto &e : enemies)
-    {
-        float size = 0.05f;
-        float x = (e.x / map[0].size()) * 2.0f - 1.0f;
-        float y = (e.y / map.size()) * 2.0f - 1.0f;
-
-        glBegin(GL_QUADS);
-        glTexCoord2f(0, 1);
-        glVertex2f(x - size, y - size);
-        glTexCoord2f(1, 1);
-        glVertex2f(x + size, y - size);
-        glTexCoord2f(1, 0);
-        glVertex2f(x + size, y + size);
-        glTexCoord2f(0, 0);
-        glVertex2f(x - size, y + size);
-        glEnd();
-    }
-
-    glDisable(GL_BLEND);
-    glDisable(GL_TEXTURE_2D);
-}
-
-void FlowField::loadTexture(const std::string &path)
-{
-    int w, h, channels;
-    unsigned char *data = stbi_load(path.c_str(), &w, &h, &channels, 4);
-    if (!data)
-        return;
-
-    glGenTextures(1, &enemyTexture);
-    glBindTexture(GL_TEXTURE_2D, enemyTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    stbi_image_free(data);
 }
