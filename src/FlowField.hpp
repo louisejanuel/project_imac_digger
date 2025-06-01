@@ -1,7 +1,5 @@
 #pragma once
-#include <vector>
-#include <string>
-#include <GL/gl.h>
+#include "utils.hpp"
 
 struct Vec2
 {

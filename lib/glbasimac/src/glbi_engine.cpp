@@ -77,16 +77,11 @@ namespace glbasimac {
 	}
 
 	void GLBI_Engine::activateTexturing(bool use_texture) {
-		useTexture = use_texture;
-		glActiveTexture(GL_TEXTURE0);
-		if (!mode2D) {
-			glUniform1i(glGetUniformLocation(idShader[currentShader],"tex0"),0);
-			glUniform1i(glGetUniformLocation(idShader[currentShader],"use_texture"),useTexture);
-		}
-		else {
-			std::cerr<<"Unable to use texturing in 2D mode"<<std::endl;
-		}
-	}
+        useTexture = use_texture;
+        glActiveTexture(GL_TEXTURE0);
+        glUniform1i(glGetUniformLocation(idShader[currentShader],"use_texture"),useTexture);
+        glUniform1i(glGetUniformLocation(idShader[currentShader],"tex0"),0);
+    }
 
 	void GLBI_Engine::switchToFlatShading() {
 		currentShader = 0;

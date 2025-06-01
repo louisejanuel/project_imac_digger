@@ -1,9 +1,5 @@
 #include "player.hpp"
 #include "mapGenerator.hpp"
-#include "gameOver.hpp"
-#include <iostream>
-#include <GL/glu.h>
-#include <GLFW/glfw3.h>
 
 Player::Player(float x, float y, float size)
     : x(x), y(y), size(size), speed(5.0f), score(0), currentDirection(DOWN) {}

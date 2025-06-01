@@ -1,7 +1,4 @@
-#include <GLFW/glfw3.h>
-#define STB_EASY_FONT_IMPLEMENTATION
-#include "stb_easy_font.h"
-#include "menu.hpp"
+#include "utils.hpp"
 
 void showGameOver()
 {

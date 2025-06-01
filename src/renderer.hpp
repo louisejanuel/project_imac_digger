@@ -3,7 +3,7 @@
 #include "flowfield.hpp"
 #include "player.hpp"
 #include "ennemis.hpp"
-#include <GLFW/glfw3.h>
+#include "utils.hpp"
 
 struct Renderer {
     int width, height;

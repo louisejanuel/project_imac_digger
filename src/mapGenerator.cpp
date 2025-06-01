@@ -1,7 +1,4 @@
 #include "mapGenerator.hpp"
-#include <iostream>
-#include <cstdlib>
-#include <ctime>
 
 MapGenerator::MapGenerator(int w, int h, int fillProb)
     : width(w), height(h), fillProbability(fillProb)

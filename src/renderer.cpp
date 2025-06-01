@@ -1,7 +1,4 @@
 #include "renderer.hpp"
-#include <iostream>
-#include <GL/glu.h>
-#include <cmath> // Ajout pour std::round
 
 Renderer::Renderer(int screenW, int screenH, MapGenerator &mapGen, FlowField &flow, Ennemi ennemi)
     : width(screenW), height(screenH), map(mapGen), flowfield(flow),

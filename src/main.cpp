@@ -1,6 +1,6 @@
 #include "mapGenerator.hpp"
 #include "renderer.hpp"
-#include "menu.hpp"
+#include "utils.hpp"
 
 int main()
 {

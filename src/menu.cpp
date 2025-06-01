@@ -1,11 +1,10 @@
-#include <GLFW/glfw3.h>
-#define STB_EASY_FONT_IMPLEMENTATION
-#include "stb_easy_font.h"
+#include "menu.hpp"
 
 // Affiche du texte en pixels (0,0 en haut-gauche)
-void drawText(float x, float y, const char* text) {
+void drawText(float x, float y, const char *text)
+{
     char buffer[99999];
-    int quads = stb_easy_font_print(x, y, (char*)text, nullptr, buffer, sizeof(buffer));
+    int quads = stb_easy_font_print(x, y, (char *)text, nullptr, buffer, sizeof(buffer));
     glEnableClientState(GL_VERTEX_ARRAY);
     glVertexPointer(2, GL_FLOAT, 16, buffer);
     glDrawArrays(GL_QUADS, 0, quads * 4);
@@ -25,20 +24,22 @@ int showMenu()
     }
 
     glfwMakeContextCurrent(window);
+    gladLoadGL(); 
+
+
+    int width, height;
+    glfwGetWindowSize(window, &width, &height);
+
+    // Setup 2D orthographic projection en pixels
+    glViewport(0, 0, width, height);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0, width, height, 0, -1, 1);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
 
     while (!glfwWindowShouldClose(window))
     {
-        int width, height;
-        glfwGetWindowSize(window, &width, &height);
-
-        // Setup 2D orthographic projection en pixels
-        glViewport(0, 0, width, height);
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-        glOrtho(0, width, height, 0, -1, 1);
-        glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
-
         glClear(GL_COLOR_BUFFER_BIT);
 
         double xpos, ypos;

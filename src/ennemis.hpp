@@ -1,7 +1,6 @@
 #pragma once
-#include <vector>
-#include <GL/gl.h>
 #include "FlowField.hpp"
+#include "utils.hpp"
 
 struct Ennemi
 {

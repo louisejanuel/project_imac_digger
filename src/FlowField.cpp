@@ -1,9 +1,4 @@
 #include "FlowField.hpp"
-#include <queue>
-#include <limits>
-#include <cmath>
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
 
 FlowField::FlowField(const std::vector<std::vector<int>> &map)
     : map(map)
