@@ -4,16 +4,16 @@
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 
-#include "../lib/glbasimac/tools/stb_image.h"
+// #define STB_IMAGE_IMPLEMENTATION
+#define GLFW_INCLUDE_NONE
+
+// #include "../lib/glbasimac/tools/stb_image.h"
 #include "glbasimac/glbi_texture.hpp"
 
 #include "glbasimac/glbi_engine.hpp"
 #include "glbasimac/glbi_set_of_points.hpp"
 #include "glbasimac/glbi_convex_2D_shape.hpp"
 #include "tools/basic_mesh.hpp"
-
-#define STB_IMAGE_IMPLEMENTATION
-#define GLFW_INCLUDE_NONE
 
 #include "tools/matrix_stack.hpp"
 #include <iostream>

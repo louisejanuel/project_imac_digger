@@ -9,7 +9,7 @@ namespace glbasimac {
 		}
 	}
 
-	void GLBI_Texture::attachTexture() {
+	void GLBI_Texture::attachTexture() const {
 		if (!id_in_GL) {
 			std::cerr<<"Unable to attach an uncreated Texture"<<std::endl;
 			exit(1);
@@ -29,7 +29,7 @@ namespace glbasimac {
 		if (channels == 4) glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,width,height,0,GL_RGBA,GL_UNSIGNED_BYTE,pixels);
 	}
 
-	void GLBI_Texture::detachTexture() {
+	void GLBI_Texture::detachTexture() const {
 		glBindTexture(GL_TEXTURE_2D,0);
 	}
 
