@@ -21,7 +21,7 @@ struct FlowField
     const std::vector<std::vector<int>> &map;
     std::vector<std::vector<int>> distance;
     std::vector<std::vector<Vec2>> directions;
-    std::vector<Vec2> neighbors = {{0, -1}, {-1, 0}, {1, 0}, {0, 1}};
+    std::vector<Vec2> neighbors = {{0, -1}, {-1, 0}, {1, 0}, {0, 1},{1, 1},{-1, 1},{1, -1},{-1, -1}};
 
     GLuint enemyTexture = 0;
 

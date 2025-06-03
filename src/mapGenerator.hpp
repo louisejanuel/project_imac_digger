@@ -1,14 +1,14 @@
 #pragma once
 #include "utils.hpp"
 
-enum TileType {
-    EMPTY = 0,
-    FULL = 1,
-    OBJECT = 2,
-    OBSTACLE = 3,
-    TRAP = 4,
-    // HIDDEN_OBJECT = 5
-};
+// enum TileType {
+//     EMPTY = 0,
+//     FULL = 1,
+//     OBJECT = 2,
+//     OBSTACLE = 3,
+//     TRAP = 4,
+//     // HIDDEN_OBJECT = 5
+// };
 
 struct MapGenerator {
     MapGenerator(int width, int height, int fillProb);

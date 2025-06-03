@@ -40,3 +40,12 @@ using namespace glbasimac;
 void drawText(float x, float y, const char* text);
 int showMenu();
 void showGameOver();
+
+enum TileType {
+    EMPTY = 0,
+    FULL = 1,
+    OBJECT = 2,
+    OBSTACLE = 3,
+    TRAP = 4,
+    // HIDDEN_OBJECT = 5
+};
