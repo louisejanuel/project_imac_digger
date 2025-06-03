@@ -1,5 +1,8 @@
 #include "player.hpp"
 #include "mapGenerator.hpp"
+#include "gameWon.hpp"
+#include "gameOver.hpp"
+#include "ennemis.hpp"
 
 Player::Player(float x, float y, float size)
     : x(x), y(y), size(size), speed(5.0f), score(0), currentDirection(DOWN) {}
@@ -71,29 +74,43 @@ void Player::update(float deltaTime, std::vector<std::vector<int>> &map)
         }
     }
 
-    // Gestion des objets et des pièges (inchangée)
-    int gridX = static_cast<int>(x);
-    int gridY = static_cast<int>(y);
+    // Gestion des objets et des pièges
+    // Vérifie collisions objets/pièges avec les 4 coins
+    float size_ = size;
+    float corners[4][2] = {
+        {x, y},
+        {x + size_, y},
+        {x, y + size_},
+        {x + size_, y + size_}
+    };
 
-    if (map[gridY][gridX] == OBJECT)
-    {
-        map[gridY][gridX] = EMPTY;
-        score++;
-        std::cout << "Objet ramassé ! Score : " << score << "/" << 15 << "\n";
-
-        if (score == 15)
-        {
-            std::cout << "Félicitations ! Vous avez ramassé tous les objets et gagné !\n";
+    bool objectPicked = false;
+    bool trapTriggered = false;
+    for (int i = 0; i < 4; ++i) {
+        int cx = int(corners[i][0]);
+        int cy = int(corners[i][1]);
+        if (cx < 0 || cy < 0 || cy >= (int)map.size() || cx >= (int)map[0].size())
+            continue;
+        if (!objectPicked && map[cy][cx] == OBJECT) {
+            map[cy][cx] = EMPTY;
+            score++;
+            std::cout << "Objet ramassé ! Score : " << score << "/" << 15 << "\n";
+            if (score == 15) {
+                showGameWon();
+                std::cout << "Félicitations ! Vous avez ramassé tous les objets et gagné !\n";
+            }
+            objectPicked = true;
+        }
+        if (!trapTriggered && map[cy][cx] == TRAP) {
+            std::cout << "Tu es tombé dans un piège !\n";
+            map[cy][cx] = EMPTY;
+            showGameOver();
+            glfwSetWindowShouldClose(glfwGetCurrentContext(), GLFW_TRUE);
+            trapTriggered = true;
         }
     }
-
-    if (map[gridY][gridX] == TRAP)
-    {
-        std::cout << "Tu es tombé dans un piège !\n";
-        showGameOver();
-        glfwSetWindowShouldClose(glfwGetCurrentContext(), GLFW_TRUE);
-    }
 }
+
 
 void Player::draw()
 {
@@ -108,24 +125,25 @@ void Player::draw()
 
 bool Player::willCollide(float testX, float testY, const std::vector<std::vector<int>> &map)
 {
-    // On vérifie les 4 coins du carré
+    // Vérifie les 4 coins du carré (comme pour les ennemis)
+    float size_ = size;
     float corners[4][2] = {
         {testX, testY},
-        {testX + size, testY},
-        {testX, testY + size},
-        {testX + size, testY + size}};
+        {testX + size_, testY},
+        {testX, testY + size_},
+        {testX + size_, testY + size_}
+    };
 
     for (int i = 0; i < 4; ++i)
     {
         int cx = int(corners[i][0]);
         int cy = int(corners[i][1]);
 
-        if (cx < 0 || cy < 0 || cy >= map.size() || cx >= map[0].size())
-            return true; // hors map = mur
+        if (cx < 0 || cy < 0 || cy >= (int)map.size() || cx >= (int)map[0].size())
+            return true; // hors map = collision
 
-        if (map[cy][cx] == 1 || map[cy][cx] == 3)
+        if (map[cy][cx] == 1 || map[cy][cx] == 3) // mur ou obstacle
             return true;
     }
-
     return false;
 }

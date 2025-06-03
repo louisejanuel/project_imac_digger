@@ -66,7 +66,7 @@ void Ennemi::draw(const std::vector<std::vector<int>> &map)
 bool Ennemi::willCollide(float testX, float testY, const std::vector<std::vector<int>> &map)
 {
     // 4 coins du carré (taille 1)
-    float size = 1.0f;
+    float size = .99f;
     float corners[4][2] = {
         {testX, testY},
         {testX + size, testY},

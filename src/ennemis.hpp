@@ -11,5 +11,5 @@ struct Ennemi
 
     std::vector<Enemy> enemies;
 
-    bool willCollide(float newX, float newY, const std::vector<std::vector<int>> &map);
+    bool willCollide(float x, float y, const std::vector<std::vector<int>> &map);
 };
