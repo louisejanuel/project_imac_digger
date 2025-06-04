@@ -114,28 +114,31 @@
 //     }
 // }
 
-
 #include "renderer.hpp"
-#include <GLFW/glfw3.h>
-#include <GL/glu.h>
-#include <cmath>
-#include <cstdlib>
-#include <iostream>
 
-Renderer::Renderer(int screenW, int screenH, glbasimac::GLBI_Map& mapGen, FlowField& flow, Ennemi ennemi)
+Renderer::Renderer(int screenW, int screenH, glbasimac::GLBI_Map &mapGen, FlowField &flow, Ennemi ennemi)
     : width(screenW), height(screenH), map(mapGen), flowfield(flow),
       player(0.0f, 0.0f, 0.99f), ennemi(std::move(ennemi))
 {
-    if (!glfwInit()) {
+    if (!glfwInit())
+    {
         std::cerr << "Erreur GLFW\n";
         exit(-1);
     }
 
     window = glfwCreateWindow(width, height, "IMAC Digger", nullptr, nullptr);
-    if (!window) {
+    if (!window)
+    {
         std::cerr << "Erreur création fenêtre GLFW\n";
         glfwTerminate();
         exit(-1);
+    }
+
+    glfwSetWindowSizeCallback(window, onWindowResized);
+    if (!window)
+    {
+        glfwTerminate();
+        return;
     }
 
     glfwMakeContextCurrent(window);
@@ -148,12 +151,13 @@ Renderer::Renderer(int screenW, int screenH, glbasimac::GLBI_Map& mapGen, FlowFi
 
     lastFrameTime = glfwGetTime();
 
-    const auto& mapData = map.getGrid();
+    const auto &mapData = map.getGrid();
     int mapHeight = mapData.size();
     int mapWidth = mapData[0].size();
 
     int playerX, playerY;
-    do {
+    do
+    {
         playerX = rand() % mapWidth;
         playerY = rand() % mapHeight;
     } while (mapData[playerY][playerX] != EMPTY); // Assure que EMPTY est bien défini
@@ -163,7 +167,8 @@ Renderer::Renderer(int screenW, int screenH, glbasimac::GLBI_Map& mapGen, FlowFi
 
 void Renderer::run()
 {
-    while (!glfwWindowShouldClose(window)) {
+    while (!glfwWindowShouldClose(window))
+    {
         float currentTime = glfwGetTime();
         float deltaTime = currentTime - lastFrameTime;
         lastFrameTime = currentTime;
@@ -173,7 +178,7 @@ void Renderer::run()
 
         drawMap(map.getGrid());
 
-        auto& mapData = const_cast<std::vector<std::vector<int>>&>(map.getGrid());
+        auto &mapData = const_cast<std::vector<std::vector<int>> &>(map.getGrid());
         player.update(deltaTime, mapData);
         player.draw();
 
@@ -181,7 +186,7 @@ void Renderer::run()
         int playerY = static_cast<int>(std::round(player.y));
         flowfield.compute(playerX, playerY);
 
-        ennemi.update(deltaTime, flowfield, map.getGrid());
+        ennemi.update(deltaTime, flowfield, mapData, player);
         ennemi.draw(map.getGrid());
 
         glfwSwapBuffers(window);
@@ -191,32 +196,53 @@ void Renderer::run()
     glfwTerminate();
 }
 
-void drawMap(const std::vector<std::vector<int>>& map)
+void onWindowResized(GLFWwindow * /*window*/, int width, int height)
+{
+    aspectRatio = width / (float)height;
+    glViewport(0, 0, width, height);
+    if (aspectRatio > 1.0)
+    {
+        myEngine.set2DProjection(-GL_VIEW_SIZE * aspectRatio / 2.,
+                                 GL_VIEW_SIZE * aspectRatio / 2.,
+                                 -GL_VIEW_SIZE / 2., GL_VIEW_SIZE / 2.);
+    }
+    else
+    {
+        myEngine.set2DProjection(-GL_VIEW_SIZE / 2., GL_VIEW_SIZE / 2.,
+                                 -GL_VIEW_SIZE / (2. * aspectRatio),
+                                 GL_VIEW_SIZE / (2. * aspectRatio));
+    }
+}
+
+void drawMap(const std::vector<std::vector<int>> &map)
 {
     int height = map.size();
     int width = map[0].size();
 
-    for (int y = 0; y < height; ++y) {
-        for (int x = 0; x < width; ++x) {
-            switch (map[y][x]) {
-                case EMPTY:
-                    glColor3f(1.0f, 1.0f, 1.0f);
-                    break;
-                case FULL:
-                    glColor3f(0.5f, 0.25f, 0.0f);
-                    break;
-                case OBJECT:
-                    glColor3f(1.0f, 0.0f, 1.0f);
-                    break;
-                case OBSTACLE:
-                    glColor3f(0.0f, 0.0f, 0.0f);
-                    break;
-                case TRAP:
-                    glColor3f(0.0f, 0.0f, 1.0f);
-                    break;
-                default:
-                    glColor3f(0.8f, 0.8f, 0.8f);
-                    break;
+    for (int y = 0; y < height; ++y)
+    {
+        for (int x = 0; x < width; ++x)
+        {
+            switch (map[y][x])
+            {
+            case EMPTY:
+                glColor3f(1.0f, 1.0f, 1.0f);
+                break;
+            case FULL:
+                glColor3f(0.5f, 0.25f, 0.0f);
+                break;
+            case OBJECT:
+                glColor3f(1.0f, 0.0f, 1.0f);
+                break;
+            case OBSTACLE:
+                glColor3f(0.0f, 0.0f, 0.0f);
+                break;
+            case TRAP:
+                glColor3f(0.0f, 0.0f, 1.0f);
+                break;
+            default:
+                glColor3f(0.8f, 0.8f, 0.8f);
+                break;
             }
 
             glBegin(GL_QUADS);

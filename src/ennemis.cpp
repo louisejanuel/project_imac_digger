@@ -3,7 +3,7 @@
 Ennemi::Ennemi(std::vector<Enemy> enemies)
     : enemies(std::move(enemies)) {}
 
-void Ennemi::update(float deltaTime, const FlowField &flow, const std::vector<std::vector<int>> &map)
+void Ennemi::update(float deltaTime, const FlowField &flow, const std::vector<std::vector<int>> &map, Player &player)
 {
     for (auto &enemy : enemies)
     {
@@ -43,6 +43,14 @@ void Ennemi::update(float deltaTime, const FlowField &flow, const std::vector<st
             enemy.x = newX;
         if (!willCollide(enemy.x, newY, map))
             enemy.y = newY;
+
+        // Vérifier la collision avec le joueur
+        if (isCollidingWithPlayer(enemy, player))
+        {
+            std::cout << "Collision avec le joueur ! Game Over.\n";
+            showGameOver(); // Afficher l'écran de fin de partie
+            glfwSetWindowShouldClose(glfwGetCurrentContext(), GLFW_TRUE);
+        }
     }
 }
 
@@ -106,4 +114,13 @@ void Ennemi::placeEnemies(int numEnemies, const std::vector<std::vector<int>> &m
 
         enemies.emplace_back(Enemy{static_cast<float>(enemyX), static_cast<float>(enemyY), 1.0f});
     }
+}
+
+bool Ennemi::isCollidingWithPlayer(const Enemy &enemy, const Player &player)
+{
+    float size = 0.99f; // Taille de l'ennemi et du joueur
+    return enemy.x < player.x + size &&
+           enemy.x + size > player.x &&
+           enemy.y < player.y + size &&
+           enemy.y + size > player.y;
 }

@@ -45,6 +45,8 @@ void drawObjet();
 void drawPiege();
 void initTextureBackground();
 
+void onWindowResized(GLFWwindow * /*window*/, int width, int height);
+
 /* OpenGL Engine */
 extern GLBI_Engine myEngine;
 

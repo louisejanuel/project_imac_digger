@@ -12,6 +12,13 @@ void showGameOver()
         return;
     }
 
+    glfwSetWindowSizeCallback(window, onWindowResized);
+    if (!window)
+    {
+        glfwTerminate();
+        return;
+    }
+
     glfwMakeContextCurrent(window);
 
     while (!glfwWindowShouldClose(window))
