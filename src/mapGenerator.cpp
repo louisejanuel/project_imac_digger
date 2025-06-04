@@ -101,10 +101,6 @@
 
 
 #include "mapGenerator.hpp"
-#include <cstdlib>
-#include <ctime>
-#include <cassert>
-#include <iostream>
 
 namespace glbasimac {
 
