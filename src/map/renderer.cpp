@@ -329,16 +329,23 @@ void setMapProjection(int mapWidth, int mapHeight)
     glLoadIdentity();
 }
 
+
 void drawObjectCounter(int windowWidth, int windowHeight, int score, int totalObjects)
 {
-    // Position du texte (au milieu en haut)
-    float textX = windowWidth / 2.0f - 50; // Ajustez la position horizontale si nécessaire
+    // Calcul de la position du texte
+    float textX = windowWidth / 2.0f - 50; // Position horizontale approximative
     float textY = 30;                      // Position verticale (en haut)
 
-    // Texte à afficher
+    // Création du texte
     std::string text = "Score : " + std::to_string(score) + " / " + std::to_string(totalObjects);
 
-    // Dessiner le texte
+    // Couleur du texte
     glColor3f(1.0f, 1.0f, 1.0f); // Blanc
-    drawText(textX, textY, text.c_str());
+
+    // === Agrandir le texte ===
+    glPushMatrix();                      // Sauvegarde la matrice actuelle
+    glTranslatef(textX, textY, 0);       // Place le texte à la bonne position
+    glScalef(2.0f, 2.0f, 1.0f);          // Augmente la taille du texte (x2 ici)
+    drawText(0, 0, text.c_str());        // Dessine le texte à l'origine (après translation)
+    glPopMatrix();                       // Restaure la matrice
 }
