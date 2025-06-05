@@ -20,7 +20,7 @@ void Menu::run()
 
     while (!glfwWindowShouldClose(window) && !playSelected)
     {
-        glfwGetWindowSize(window, &width, &height); 
+        glfwGetWindowSize(window, &width, &height);
 
         glClear(GL_COLOR_BUFFER_BIT);
 
@@ -53,8 +53,26 @@ void Menu::run()
         {
             double xpos, ypos;
             glfwGetCursorPos(window, &xpos, &ypos);
-            if (xpos > width / 3 && xpos < 2 * width / 3 && ypos > height / 3 && ypos < 2 * height / 3)
+
+            double startX = 807.0 / 1500.0 * width;
+            double startY = 360.0 / 800.0 * height;
+            double btnW = 253.0 / 1500.0 * width;
+            double btnH = 96.0 / 800.0 * height;
+
+            double quitX = 1109.0 / 1500.0 * width;
+            double quitY = 360.0 / 800.0 * height;
+
+            if (xpos > startX && xpos < startX + btnW &&
+                ypos > startY && ypos < startY + btnH)
+            {
                 playSelected = true;
+            }
+
+            if (xpos > quitX && xpos < quitX + btnW &&
+                ypos > quitY && ypos < quitY + btnH)
+            {
+                glfwSetWindowShouldClose(window, GLFW_TRUE);
+            }
         }
 
         glfwSwapBuffers(window);
