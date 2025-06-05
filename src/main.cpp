@@ -2,6 +2,9 @@
 #include "renderer.hpp"
 #include "menu.hpp"
 #include "utils.hpp"
+#define STB_IMAGE_IMPLEMENTATION
+#include "../lib/glbasimac/tools/stb_image.h"
+
 int main()
 {
     if (!glfwInit())

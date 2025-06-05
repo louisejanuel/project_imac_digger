@@ -41,39 +41,15 @@ void drawText(float x, float y, const char *text);
 int showMenu();
 void showGameOver();
 
-void drawObjet();
-void drawPiege();
-void initTextureBackground();
+// void drawObjet();
+// void drawPiege();
+// void initTextureBackground();
 
 void onWindowResized(GLFWwindow * /*window*/, int width, int height);
 GLuint chargerTexture(const char* filename);
 
 /* OpenGL Engine */
 extern GLBI_Engine myEngine;
-
-extern int winWidth;
-extern int winHeight;
-
-extern float winHaut;
-extern float winBas;
-extern float winDroite;
-extern float winGauche;
-
-extern GLBI_Texture texturePerso;
-extern GLBI_Texture textureFond;
-extern GLBI_Texture textureObjet;
-extern GLBI_Texture texturePiege;
-
-extern std::vector<std::vector<int>> grilleMap;
-
-extern StandardMesh carre;
-extern StandardMesh tileShape;
-
-// Coordonnées UV (u, v)
-extern float uvs[];
-extern float coordCoins[];
-extern float tileCoords[];
-
 
 extern const float GL_VIEW_SIZE;
 extern float aspectRatio;
@@ -85,5 +61,4 @@ enum TileType
     OBJECT = 2,
     OBSTACLE = 3,
     TRAP = 4,
-    // HIDDEN_OBJECT = 5
 };

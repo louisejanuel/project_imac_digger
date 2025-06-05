@@ -3,7 +3,7 @@ project(imac_digger)
 
 file(GLOB_RECURSE MY_SOURCES CONFIGURE_DEPENDS src/*)
 add_executable(${PROJECT_NAME} ${MY_SOURCES})
-target_include_directories(${PROJECT_NAME} PRIVATE src/ lib/glbasimac/tools)
+target_include_directories(${PROJECT_NAME} PRIVATE src/ src/map src/fenetre src/ennemi src/player lib/glbasimac/tools)
 
 # Set the folder where the executable will be created
 set_target_properties(${PROJECT_NAME} PROPERTIES
