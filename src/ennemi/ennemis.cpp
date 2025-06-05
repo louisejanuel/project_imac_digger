@@ -1,7 +1,10 @@
 #include "ennemis.hpp"
 
 Ennemi::Ennemi(std::vector<Enemy> enemies)
-    : enemies(std::move(enemies)) {}
+    : enemies(std::move(enemies))
+{
+    tex = chargerTexture("assets/images/chat.png");
+}
 
 void Ennemi::update(float deltaTime, const FlowField &flow, const std::vector<std::vector<int>> &map, Player &player)
 {
@@ -48,19 +51,32 @@ void Ennemi::update(float deltaTime, const FlowField &flow, const std::vector<st
 
 void Ennemi::draw(const std::vector<std::vector<int>> &map)
 {
-    glColor3f(0.3f, 0.3f, 0.3f);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, tex);
+    glColor3f(1, 1, 1);
+
     for (const auto &e : enemies)
     {
         float s = 1.0f;
         float x = e.x;
         float y = e.y;
         glBegin(GL_QUADS);
+        glTexCoord2f(0, 0);
         glVertex2f(x, y);
+        glTexCoord2f(1, 0);
         glVertex2f(x + s, y);
+        glTexCoord2f(1, 1);
         glVertex2f(x + s, y + s);
+        glTexCoord2f(0, 1);
         glVertex2f(x, y + s);
         glEnd();
     }
+
+    glDisable(GL_TEXTURE_2D);
+    glDisable(GL_BLEND);
 }
 
 bool Ennemi::willCollide(float testX, float testY, const std::vector<std::vector<int>> &map)

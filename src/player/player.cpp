@@ -1,11 +1,12 @@
 #include "player.hpp"
-#include "mapGenerator.hpp"
 #include "gameWon.hpp"
 #include "gameOver.hpp"
 #include "ennemis.hpp"
 
 Player::Player(float x, float y, float size)
-    : x(x), y(y), size(size), speed(5.0f), score(0), currentDirection(DOWN) {}
+    : x(x), y(y), size(size), speed(5.0f), score(0), currentDirection(DOWN) {
+           tex = chargerTexture("assets/images/souris.png"); 
+    }
 
 void Player::update(float deltaTime, std::vector<std::vector<int>> &map)
 {
@@ -111,17 +112,26 @@ void Player::update(float deltaTime, std::vector<std::vector<int>> &map)
     }
 }
 
-
 void Player::draw()
 {
-    glColor3f(1.0f, 0.0f, 0.0f); // Rouge
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, tex);
+    glColor3f(1, 1, 1);
+
     glBegin(GL_QUADS);
-    glVertex2f(x, y);
-    glVertex2f(x + size, y);
-    glVertex2f(x + size, y + size);
-    glVertex2f(x, y + size);
+    glTexCoord2f(0, 0); glVertex2f(x, y);
+    glTexCoord2f(1, 0); glVertex2f(x + size, y);
+    glTexCoord2f(1, 1); glVertex2f(x + size, y + size);
+    glTexCoord2f(0, 1); glVertex2f(x, y + size);
     glEnd();
+
+    glDisable(GL_TEXTURE_2D);
+    glDisable(GL_BLEND);
 }
+
 
 bool Player::willCollide(float testX, float testY, const std::vector<std::vector<int>> &map)
 {

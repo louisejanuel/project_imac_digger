@@ -21,4 +21,5 @@ struct Player {
     Direction currentDirection; // Direction actuelle du joueur
 
     bool willCollide(float newX, float newY, const std::vector<std::vector<int>>& map);
+    GLuint tex;
 };

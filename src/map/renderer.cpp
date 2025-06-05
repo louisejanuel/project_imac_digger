@@ -1,11 +1,10 @@
 #include "renderer.hpp"
 #include "stb_image.h"
 
-Renderer::Renderer(int screenW, int screenH, glbasimac::GLBI_Map &mapGen, FlowField &flow, Ennemi ennemi, GLFWwindow* win)
+Renderer::Renderer(int screenW, int screenH, glbasimac::GLBI_Map &mapGen, FlowField &flow, Ennemi ennemi, GLFWwindow *win)
     : width(screenW), height(screenH), map(mapGen), flowfield(flow),
       player(0.0f, 0.0f, 0.99f), ennemi(std::move(ennemi)), window(win)
 {
-
 
     glfwSetWindowSizeCallback(window, onWindowResized);
     if (!window)
@@ -38,7 +37,6 @@ Renderer::Renderer(int screenW, int screenH, glbasimac::GLBI_Map &mapGen, FlowFi
     player = Player(static_cast<float>(playerX), static_cast<float>(playerY), 0.99f);
 }
 
-
 GLuint chargerTexture(const char *filename)
 {
     int width, height, channels;
@@ -60,9 +58,13 @@ GLuint chargerTexture(const char *filename)
 
 void drawCaseTexture(float xpos, float ypos, float cellWidth, float cellHeight, GLuint texture)
 {
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, texture);
-    glColor3f(1, 1, 1); // pour ne pas teinter la texture
+    glColor3f(1, 1, 1);
+
     glBegin(GL_QUADS);
     glTexCoord2f(0, 0);
     glVertex2f(xpos, ypos);
@@ -73,7 +75,9 @@ void drawCaseTexture(float xpos, float ypos, float cellWidth, float cellHeight, 
     glTexCoord2f(0, 1);
     glVertex2f(xpos, ypos + cellHeight);
     glEnd();
+
     glDisable(GL_TEXTURE_2D);
+    glDisable(GL_BLEND);
 }
 
 void drawMap(const GLBI_Map &map, GLuint tex_mur, GLuint tex_sol, GLuint tex_objet, GLuint tex_piege, GLuint tex_obstacle)
@@ -133,7 +137,7 @@ void Renderer::run()
         glClear(GL_COLOR_BUFFER_BIT);
         // drawMap(map.getGrid());
 
-        auto &mapData = const_cast<std::vector<std::vector<int>> &>(map.getGrid());
+        // auto &mapData = const_cast<std::vector<std::vector<int>> &>(map.getGrid());
 
         // Config carte
         setMapProjection(map.getGrid()[0].size(), map.getGrid().size());
@@ -196,17 +200,6 @@ void Renderer::run()
         glfwPollEvents();
     }
 }
-
-
-
-
-
-
-
-
-
-
-
 
 void drawQuitButton(int windowWidth, int windowHeight)
 {
@@ -317,7 +310,6 @@ bool handlePlayButtonClick(int windowWidth, int windowHeight, double xpos, doubl
     return (xpos >= buttonX && xpos <= buttonX + buttonWidth &&
             ypos >= buttonY && ypos <= buttonY + buttonHeight);
 }
-
 
 void setOverlayProjection(int windowWidth, int windowHeight)
 {
