@@ -174,8 +174,11 @@ void Renderer::run()
         lastFrameTime = currentTime;
 
         glClear(GL_COLOR_BUFFER_BIT);
-        glLoadIdentity();
 
+        // Configurer la projection pour la carte
+        setMapProjection(map.getGrid()[0].size(), map.getGrid().size());
+
+        // Dessiner la carte et les éléments du jeu
         drawMap(map.getGrid());
 
         auto &mapData = const_cast<std::vector<std::vector<int>> &>(map.getGrid());
@@ -188,6 +191,28 @@ void Renderer::run()
 
         ennemi.update(deltaTime, flowfield, mapData, player);
         ennemi.draw(map.getGrid());
+
+        // Obtenir les dimensions de la fenêtre
+        int windowWidth, windowHeight;
+        glfwGetWindowSize(window, &windowWidth, &windowHeight);
+
+        // Configurer la projection pour l'overlay
+        setOverlayProjection(windowWidth, windowHeight);
+
+        // Dessiner le bouton "Quitter"
+        drawQuitButton(windowWidth, windowHeight);
+
+        // Dessiner le compteur des objets
+        drawObjectCounter(windowWidth, windowHeight, player.getScore(), 15);
+
+        // Gérer les clics sur le bouton "Quitter"
+        double xpos, ypos;
+        glfwGetCursorPos(window, &xpos, &ypos);
+        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS &&
+            handleQuitButtonClick(windowWidth, windowHeight, xpos, ypos))
+        {
+            glfwSetWindowShouldClose(window, GLFW_TRUE);
+        }
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -253,4 +278,76 @@ void drawMap(const std::vector<std::vector<int>> &map)
             glEnd();
         }
     }
+}
+
+void drawQuitButton(int windowWidth, int windowHeight)
+{
+    // Dimensions du bouton
+    float buttonWidth = windowWidth * 0.1f;    // 10% de la largeur de la fenêtre
+    float buttonHeight = windowHeight * 0.05f; // 5% de la hauteur de la fenêtre
+
+    // Position du bouton (en haut à droite)
+    float buttonX = windowWidth - buttonWidth - 25; // 10 pixels de marge
+    float buttonY = 25;                             // 10 pixels de marge depuis le haut
+
+    // Dessin du bouton (rouge)
+    glColor3f(0.8f, 0.2f, 0.2f);
+    glBegin(GL_QUADS);
+    glVertex2f(buttonX, buttonY);
+    glVertex2f(buttonX + buttonWidth, buttonY);
+    glVertex2f(buttonX + buttonWidth, buttonY + buttonHeight);
+    glVertex2f(buttonX, buttonY + buttonHeight);
+    glEnd();
+
+    // Texte "Quitter" (jaune)
+    glColor3f(1.0f, 1.0f, 0.0f);
+    drawText(buttonX + buttonWidth / 4, buttonY + buttonHeight / 4, "Quitter");
+}
+
+bool handleQuitButtonClick(int windowWidth, int windowHeight, double xpos, double ypos)
+{
+    bool result = false;
+    // Dimensions du bouton
+    float buttonWidth = windowWidth * 0.1f;
+    float buttonHeight = windowHeight * 0.05f;
+
+    // Position du bouton
+    float buttonX = windowWidth - buttonWidth - 10;
+    float buttonY = 10;
+
+    result = (xpos >= buttonX && xpos <= buttonX + buttonWidth && ypos >= buttonY && ypos <= buttonY + buttonHeight);
+
+    return result;
+}
+
+void setOverlayProjection(int windowWidth, int windowHeight)
+{
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0, windowWidth, windowHeight, 0, -1, 1); // Projection en pixels
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+}
+
+void setMapProjection(int mapWidth, int mapHeight)
+{
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0, mapWidth, mapHeight, 0, -1, 1); // Projection basée sur les dimensions de la carte
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+}
+
+void drawObjectCounter(int windowWidth, int windowHeight, int score, int totalObjects)
+{
+    // Position du texte (au milieu en haut)
+    float textX = windowWidth / 2.0f - 50; // Ajustez la position horizontale si nécessaire
+    float textY = 30;                      // Position verticale (en haut)
+
+    // Texte à afficher
+    std::string text = "Score : " + std::to_string(score) + " / " + std::to_string(totalObjects);
+
+    // Dessiner le texte
+    glColor3f(1.0f, 1.0f, 1.0f); // Blanc
+    drawText(textX, textY, text.c_str());
 }

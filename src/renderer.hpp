@@ -42,3 +42,8 @@ struct Renderer {
 };
 
 void drawMap(const std::vector<std::vector<int>>& map);
+void drawQuitButton(int windowWidth, int windowHeight);
+bool handleQuitButtonClick(int windowWidth, int windowHeight, double xpos, double ypos);
+void setOverlayProjection(int windowWidth, int windowHeight);
+void setMapProjection(int mapWidth, int mapHeight);
+void drawObjectCounter(int windowWidth, int windowHeight, int score, int totalObjects);
