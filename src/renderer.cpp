@@ -1,23 +1,11 @@
 #include "renderer.hpp"
 #include "stb_image_implementation.hpp"
 
-Renderer::Renderer(int screenW, int screenH, glbasimac::GLBI_Map &mapGen, FlowField &flow, Ennemi ennemi)
+Renderer::Renderer(int screenW, int screenH, glbasimac::GLBI_Map &mapGen, FlowField &flow, Ennemi ennemi, GLFWwindow* win)
     : width(screenW), height(screenH), map(mapGen), flowfield(flow),
-      player(0.0f, 0.0f, 0.99f), ennemi(std::move(ennemi))
+      player(0.0f, 0.0f, 0.99f), ennemi(std::move(ennemi)), window(win)
 {
-    if (!glfwInit())
-    {
-        std::cerr << "Erreur GLFW/n";
-        exit(-1);
-    }
 
-    window = glfwCreateWindow(width, height, "IMAC Digger", nullptr, nullptr);
-    if (!window)
-    {
-        std::cerr << "Erreur création fenêtre GLFW/n";
-        glfwTerminate();
-        exit(-1);
-    }
 
     glfwSetWindowSizeCallback(window, onWindowResized);
     if (!window)
@@ -158,8 +146,7 @@ void Renderer::run()
         // drawMap(map.getGrid());
 
         auto &mapData = const_cast<std::vector<std::vector<int>> &>(map.getGrid());
-        player.update(deltaTime, mapData);
-        player.draw();
+
         // Config carte
         setMapProjection(map.getGrid()[0].size(), map.getGrid().size());
 
@@ -220,8 +207,6 @@ void Renderer::run()
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
-
-    glfwTerminate();
 }
 
 

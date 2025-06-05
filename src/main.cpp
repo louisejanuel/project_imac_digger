@@ -1,22 +1,34 @@
 #include "mapGenerator.hpp"
 #include "renderer.hpp"
+#include "menu.hpp"
 #include "utils.hpp"
-
 int main()
 {
-    int choice = showMenu();
-    if (choice == 1)
+    if (!glfwInit())
+        exit(-1);
+
+    GLFWwindow *window = glfwCreateWindow(1500, 800, "IMAC Digger", nullptr, nullptr);
+    if (!window)
     {
-        
+        glfwTerminate();
+        exit(-1);
+    }
+
+    Menu menu(window);
+    menu.run();
+
+    if (menu.shouldPlay())
+    {
         glbasimac::GLBI_Map mapGen(60, 32);
         mapGen.generate(5);
         FlowField flowfield(mapGen.getGrid());
-
         Ennemi ennemi({});
-        ennemi.placeEnemies(2, mapGen.getGrid()); // Placer 2 ennemis aléatoirement
+        ennemi.placeEnemies(2, mapGen.getGrid());
 
-        Renderer renderer(1500, 800, mapGen, flowfield, ennemi);
+        Renderer renderer(1500, 800, mapGen, flowfield, ennemi, window);
         renderer.run();
     }
-    return 0;
+
+    glfwDestroyWindow(window);
+    glfwTerminate();
 }
