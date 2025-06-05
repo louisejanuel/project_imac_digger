@@ -26,3 +26,21 @@ const float GL_VIEW_SIZE = 1.;
 float aspectRatio = 1.0f;
 
 std::vector<std::vector<int>> grilleMap;
+
+void onWindowResized(GLFWwindow * /*window*/, int width, int height)
+{
+    aspectRatio = width / (float)height;
+    glViewport(0, 0, width, height);
+    if (aspectRatio > 1.0)
+    {
+        myEngine.set2DProjection(-GL_VIEW_SIZE * aspectRatio / 2.,
+                                 GL_VIEW_SIZE * aspectRatio / 2.,
+                                 -GL_VIEW_SIZE / 2., GL_VIEW_SIZE / 2.);
+    }
+    else
+    {
+        myEngine.set2DProjection(-GL_VIEW_SIZE / 2., GL_VIEW_SIZE / 2.,
+                                 -GL_VIEW_SIZE / (2. * aspectRatio),
+                                 GL_VIEW_SIZE / (2. * aspectRatio));
+    }
+}

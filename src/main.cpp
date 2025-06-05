@@ -7,6 +7,7 @@ int main()
     int choice = showMenu();
     if (choice == 1)
     {
+        
         glbasimac::GLBI_Map mapGen(60, 32);
         mapGen.generate(5);
         FlowField flowfield(mapGen.getGrid());
