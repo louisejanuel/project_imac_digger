@@ -1,71 +1,48 @@
-#include "stb_image_implementation.hpp"
+#define STB_IMAGE_IMPLEMENTATION
 #include "texture.hpp"
+#include "stb_image_implementation.hpp"
+#include "utils.hpp"
 
-// Initialisation des buffers et VAO du perso
-void initTexturePerso(){
-    carre.setNbElt(4);
-    // Attrib location 0 pour position, 2 floats
-    carre.addOneBuffer(0, 2, coordCoins, "position", true);
-    // Attrib location 2 pour UV, 2 floats
-    carre.addOneBuffer(2, 2, uvs, "uvs", true);
-    carre.createVAO();
-	carre.changeType(GL_TRIANGLE_FAN);
+Texture::Texture() {}
 
-    loadTexturePerso(texturePerso);
+Texture::~Texture() {
+    if (texID) glDeleteTextures(1, &texID);
 }
 
-// Initialisation des buffers et VAO des blocs 
-void initTextureBackground(){
-    tileShape.setNbElt(4);
-    // Attrib location 0 pour position, 2 floats
-    tileShape.addOneBuffer(0, 2, tileCoords, "position", true);
-    // Attrib location 2 pour UV, 2 floats
-    tileShape.addOneBuffer(2, 2, uvs, "uvs", true);
-    tileShape.createVAO();
-	tileShape.changeType(GL_TRIANGLE_FAN);
+bool Texture::loadFromFile(const std::string& path, bool flip) {
+    if (texID) glDeleteTextures(1, &texID);
 
-    loadTextureFond(textureFond);
-    loadTextureObjet(textureObjet);
-    loadTexturePiege(texturePiege);
-}
-
-
-// Fonction générique de chargement de texture à partir d'un fichier
-void loadTexture(const char* filename, GLBI_Texture& texture){
-	int width{};
-	int height{};
-	int nbChan{3};
-	stbi_set_flip_vertically_on_load(true);
-	unsigned char *data = stbi_load(filename, &width, &height, &nbChan, 0);
-    if(data){
-		
-		myEngine.activateTexturing(true);
-        texture.createTexture();
-		texture.attachTexture();
-		texture.setParameters(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		texture.loadImage(width, height, nbChan, data);
-		stbi_image_free(data);
-        texture.detachTexture();
-		
+    stbi_set_flip_vertically_on_load(flip);
+    int w, h, c;
+    unsigned char* data = stbi_load(path.c_str(), &w, &h, &c, 0);
+    if (!data) {
+        std::cerr << "[Texture] Erreur chargement : " << path << " (" << stbi_failure_reason() << ")\n";
+        texID = 0;
+        return false;
     }
-	else{
-		std::cout<<"image non chargée !!!"<< std::endl;
-	}
+    glGenTextures(1, &texID);
+    glBindTexture(GL_TEXTURE_2D, texID);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    GLenum format = (c == 4) ? GL_RGBA : GL_RGB;
+    glTexImage2D(GL_TEXTURE_2D, 0, format, w, h, 0, format, GL_UNSIGNED_BYTE, data);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    
+    stbi_image_free(data);
+    return true;
 }
 
-
-void loadTexturePerso(GLBI_Texture& texture){
-    loadTexture("../assets/images/souris.png", texture);
+void Texture::attachTexture() const {
+    glBindTexture(GL_TEXTURE_2D, texID);
+    glEnable(GL_TEXTURE_2D);
 }
 
-void loadTextureFond(GLBI_Texture& texture){
-    loadTexture("../assets/images/sol.jpg", texture);
-}
-
-void loadTextureObjet(GLBI_Texture& texture){
-    loadTexture("../assets/images/fromage.png", texture);
-}
-
-void loadTexturePiege(GLBI_Texture& texture){
-    loadTexture("../assets/images/trou.png", texture);
+void Texture::detachTexture() const {
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glDisable(GL_TEXTURE_2D);
 }
