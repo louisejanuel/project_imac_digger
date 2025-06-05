@@ -1,4 +1,6 @@
 #include "renderer.hpp"
+#include "stb_image_implementation.hpp"
+#include "texture.hpp"
 
 Renderer::Renderer(int screenW, int screenH, glbasimac::GLBI_Map &mapGen, FlowField &flow, Ennemi ennemi)
     : width(screenW), height(screenH), map(mapGen), flowfield(flow),
@@ -6,14 +8,14 @@ Renderer::Renderer(int screenW, int screenH, glbasimac::GLBI_Map &mapGen, FlowFi
 {
     if (!glfwInit())
     {
-        std::cerr << "Erreur GLFW\n";
+        std::cerr << "Erreur GLFW/n";
         exit(-1);
     }
 
     window = glfwCreateWindow(width, height, "IMAC Digger", nullptr, nullptr);
     if (!window)
     {
-        std::cerr << "Erreur création fenêtre GLFW\n";
+        std::cerr << "Erreur création fenêtre GLFW/n";
         glfwTerminate();
         exit(-1);
     }
@@ -44,13 +46,114 @@ Renderer::Renderer(int screenW, int screenH, glbasimac::GLBI_Map &mapGen, FlowFi
     {
         playerX = rand() % mapWidth;
         playerY = rand() % mapHeight;
-    } while (mapData[playerY][playerX] != EMPTY); // Assure que EMPTY est bien défini
+    } while (mapData[playerY][playerX] != EMPTY);
 
     player = Player(static_cast<float>(playerX), static_cast<float>(playerY), 0.99f);
 }
 
+// GLuint tex_mur = chargerTexture("C:/Users/loulo/Downloads/dossier_de_la_crise/mur.jpg");
+// GLuint tex_sol = chargerTexture("C:/Users/loulo/Downloads/dossier_de_la_crise/sol.jpg");
+// GLuint tex_objet = chargerTexture("C:/Users/loulo/Downloads/dossier_de_la_crise/fromage.png");
+// GLuint tex_piege = chargerTexture("C:/Users/loulo/Downloads/dossier_de_la_crise/trou.png");
+// GLuint tex_obstacle = chargerTexture("C:/Users/loulo/Downloads/dossier_de_la_crise/chat.png");
+
+GLuint chargerTexture(const char *filename)
+{
+    int width, height, channels;
+    unsigned char *data = stbi_load(filename, &width, &height, &channels, 4);
+    if (!data)
+    {
+        std::cerr << "Erreur chargement image : " << filename << std::endl;
+        return 0;
+    }
+    GLuint texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    stbi_image_free(data);
+    return texture;
+}
+
+void drawCaseTexture(float xpos, float ypos, float cellWidth, float cellHeight, GLuint texture)
+{
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glColor3f(1, 1, 1); // pour ne pas teinter la texture
+    glBegin(GL_QUADS);
+    glTexCoord2f(0, 0);
+    glVertex2f(xpos, ypos);
+    glTexCoord2f(1, 0);
+    glVertex2f(xpos + cellWidth, ypos);
+    glTexCoord2f(1, 1);
+    glVertex2f(xpos + cellWidth, ypos + cellHeight);
+    glTexCoord2f(0, 1);
+    glVertex2f(xpos, ypos + cellHeight);
+    glEnd();
+    glDisable(GL_TEXTURE_2D);
+}
+
+void drawMap(const GLBI_Map &map, GLuint tex_mur, GLuint tex_sol, GLuint tex_objet, GLuint tex_piege, GLuint tex_obstacle)
+{
+    int largeur = map.width;
+    int hauteur = map.height;
+
+    float cellWidth = 1.0f;
+    float cellHeight = 1.0f;
+
+    for (int y = 0; y < hauteur; ++y)
+    {
+        for (int x = 0; x < largeur; ++x)
+        {
+            float xpos = static_cast<float>(x);
+            float ypos = static_cast<float>(y);
+
+            // Texture correspondante
+            switch (map.grid[y][x])
+            {
+            case EMPTY:
+                drawCaseTexture(xpos, ypos, cellWidth, cellHeight, tex_sol);
+                break;
+            case FULL:
+                drawCaseTexture(xpos, ypos, cellWidth, cellHeight, tex_mur);
+                break;
+            case OBJECT:
+                drawCaseTexture(xpos, ypos, cellWidth, cellHeight, tex_objet);
+                break;
+            case OBSTACLE:
+                drawCaseTexture(xpos, ypos, cellWidth, cellHeight, tex_obstacle);
+                break;
+            case TRAP:
+                drawCaseTexture(xpos, ypos, cellWidth, cellHeight, tex_piege);
+                break;
+            default:
+                break;
+            }
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 void Renderer::run()
 {
+    GLuint tex_mur = chargerTexture("assets/images/mur.jpg");
+    GLuint tex_sol = chargerTexture("assets/images/sol.jpg");
+    GLuint tex_objet = chargerTexture("assets/images/fromage.png");
+    GLuint tex_piege = chargerTexture("assets/images/trou.png");
+    GLuint tex_obstacle = chargerTexture("assets/images/chat.png");
+
     while (!glfwWindowShouldClose(window))
     {
         float currentTime = glfwGetTime();
@@ -58,13 +161,17 @@ void Renderer::run()
         lastFrameTime = currentTime;
 
         glClear(GL_COLOR_BUFFER_BIT);
+        // drawMap(map.getGrid());
 
+        auto &mapData = const_cast<std::vector<std::vector<int>> &>(map.getGrid());
+        player.update(deltaTime, mapData);
+        player.draw();
         // Config carte
         setMapProjection(map.getGrid()[0].size(), map.getGrid().size());
 
         if (!isPaused)
         {
-            drawMap(map.getGrid());
+            drawMap(map, tex_mur, tex_sol, tex_objet, tex_piege, tex_obstacle);
 
             auto &mapData = const_cast<std::vector<std::vector<int>> &>(map.getGrid());
             player.update(deltaTime, mapData);
@@ -124,64 +231,124 @@ void Renderer::run()
 }
 
 
-void onWindowResized(GLFWwindow * /*window*/, int width, int height)
-{
-    aspectRatio = width / (float)height;
-    glViewport(0, 0, width, height);
-    if (aspectRatio > 1.0)
-    {
-        myEngine.set2DProjection(-GL_VIEW_SIZE * aspectRatio / 2.,
-                                 GL_VIEW_SIZE * aspectRatio / 2.,
-                                 -GL_VIEW_SIZE / 2., GL_VIEW_SIZE / 2.);
-    }
-    else
-    {
-        myEngine.set2DProjection(-GL_VIEW_SIZE / 2., GL_VIEW_SIZE / 2.,
-                                 -GL_VIEW_SIZE / (2. * aspectRatio),
-                                 GL_VIEW_SIZE / (2. * aspectRatio));
-    }
-}
 
-void drawMap(const std::vector<std::vector<int>> &map)
-{
-    int height = map.size();
-    int width = map[0].size();
+// for (int y = 0; y < hauteur; ++y) {
+//     for (int x = 0; x < largeur; ++x) {
+//         int val = carte[y][x];
 
-    for (int y = 0; y < height; ++y)
-    {
-        for (int x = 0; x < width; ++x)
-        {
-            switch (map[y][x])
-            {
-            case EMPTY:
-                glColor3f(1.0f, 1.0f, 1.0f);
-                break;
-            case FULL:
-                glColor3f(0.5f, 0.25f, 0.0f);
-                break;
-            case OBJECT:
-                glColor3f(1.0f, 0.0f, 1.0f);
-                break;
-            case OBSTACLE:
-                glColor3f(0.0f, 0.0f, 0.0f);
-                break;
-            case TRAP:
-                glColor3f(0.0f, 0.0f, 1.0f);
-                break;
-            default:
-                glColor3f(0.8f, 0.8f, 0.8f);
-                break;
-            }
+//         float xpos = -1.0f + x * cellWidth;
+//         float ypos = -1.0f + y * cellHeight;
 
-            glBegin(GL_QUADS);
-            glVertex2f(x, y);
-            glVertex2f(x + 1, y);
-            glVertex2f(x + 1, y + 1);
-            glVertex2f(x, y + 1);
-            glEnd();
-        }
-    }
-}
+//         // Cases vides (blanc) ou murs (noir)
+//         // if (val == 1) glColor3f(0.0f, 0.0f, 0.0f); // mur noir
+//         // else glColor3f(1.0f, 1.0f, 1.0f); // vide blanc
+
+//         // glBegin(GL_QUADS);
+//         // glVertex2f(xpos, ypos);
+//         // glVertex2f(xpos + cellWidth, ypos);
+//         // glVertex2f(xpos + cellWidth, ypos + cellHeight);
+//         // glVertex2f(xpos, ypos + cellHeight);
+//         // glEnd();
+
+//         // // piège (petit carré bleu)
+//         // if (val == 2) {
+//         //     glColor3f(0.0f, 0.0f, 1.0f);
+//         //     float margin = 0.2f;
+//         //     glBegin(GL_QUADS);
+//         //     glVertex2f(xpos + cellWidth * margin, ypos + cellHeight * margin);
+//         //     glVertex2f(xpos + cellWidth * (1 - margin), ypos + cellHeight * margin);
+//         //     glVertex2f(xpos + cellWidth * (1 - margin), ypos + cellHeight * (1 - margin));
+//         //     glVertex2f(xpos + cellWidth * margin, ypos + cellHeight * (1 - margin));
+//         //     glEnd();
+//         // }
+
+//         // // Ennemi (petit carré rouge)
+//         // if (val == 4) {
+//         //     glColor3f(1.0f, 0.0f, 0.0f);
+//         //     float margin = 0.2f;
+//         //     glBegin(GL_QUADS);
+//         //     glVertex2f(xpos + cellWidth * margin, ypos + cellHeight * margin);
+//         //     glVertex2f(xpos + cellWidth * (1 - margin), ypos + cellHeight * margin);
+//         //     glVertex2f(xpos + cellWidth * (1 - margin), ypos + cellHeight * (1 - margin));
+//         //     glVertex2f(xpos + cellWidth * margin, ypos + cellHeight * (1 - margin));
+//         //     glEnd();
+//         // }
+//         // if (val == 3) { // Gemme (petit carré jaune)
+//         //     glColor3f(1.0f, 1.0f, 0.0f);
+//         //     float margin = 0.2f;
+//         //     glBegin(GL_QUADS);
+//         //     glVertex2f(xpos + cellWidth * margin, ypos + cellHeight * margin);
+//         //     glVertex2f(xpos + cellWidth * (1 - margin), ypos + cellHeight * margin);
+//         //     glVertex2f(xpos + cellWidth * (1 - margin), ypos + cellHeight * (1 - margin));
+//         //     glVertex2f(xpos + cellWidth * margin, ypos + cellHeight * (1 - margin));
+//         //     glEnd();
+//         // }
+//         if (val == 3) drawCaseTexture(xpos, ypos, cellWidth, cellHeight, tex_mur);//mur
+//         else if (val == 4) { //piege
+//             float margin = 0.2;
+//             drawCaseTexture(xpos + cellWidth * margin,
+//                 ypos + cellHeight * margin,
+//                 cellWidth * (1 - 2 * margin),
+//                 cellHeight * (1 - 2 * margin),
+//                 tex_piege);
+//         }
+//         else if (val == 2) { //objet
+//             float margin = 0.2;
+//             drawCaseTexture(xpos + cellWidth * margin,
+//                 ypos + cellHeight * margin,
+//                 cellWidth * (1 - 2 * margin),
+//                 cellHeight * (1 - 2 * margin),
+//                 tex_gemme);
+//         }
+//         // else if (val == 4) { //ennemi
+//         //     float margin = 0.2;
+//         //     drawCaseTexture(xpos + cellWidth * margin,
+//         //         ypos + cellHeight * margin,
+//         //         cellWidth * (1 - 2 * margin),
+//         //         cellHeight * (1 - 2 * margin),
+//         //         tex_ennemi);
+//         // }
+//         else drawCaseTexture(xpos, ypos, cellWidth, cellHeight, tex_vide);//vide
+//     }
+
+// void drawMap(const std::vector<std::vector<int>>& map)
+// {
+//     int height = map.size();
+//     int width = map[0].size();
+
+//     for (int y = 0; y < height; ++y) {
+//         for (int x = 0; x < width; ++x) {
+//             switch (map[y][x]) {
+//                 case EMPTY:
+//                     glColor3f(1.0f, 1.0f, 1.0f);
+//                     break;
+//                 case FULL:
+//                     glColor3f(0.5f, 0.25f, 0.0f);
+//                     break;
+//                 case OBJECT:
+//                     glColor3f(1.0f, 0.0f, 1.0f);
+//                     break;
+//                 case OBSTACLE:
+//                     glColor3f(0.0f, 0.0f, 0.0f);
+//                     break;
+//                 case TRAP:
+//                     glColor3f(0.0f, 0.0f, 1.0f);
+//                     break;
+//                 default:
+//                     glColor3f(0.8f, 0.8f, 0.8f);
+//                     break;
+//             }
+
+//             glBegin(GL_QUADS);
+//             glVertex2f(x, y);
+//             glVertex2f(x + 1, y);
+//             glVertex2f(x + 1, y + 1);
+//             glVertex2f(x, y + 1);
+//             glEnd();
+//         }
+//     }
+// }
+
 
 void drawQuitButton(int windowWidth, int windowHeight)
 {
