@@ -14,4 +14,5 @@ struct Ennemi
 
     bool willCollide(float x, float y, const std::vector<std::vector<int>> &map);
     bool isCollidingWithPlayer(const Enemy &enemy, const Player &player);
+    Vec2 findAlternativeDirection(const Enemy &enemy, const FlowField &flow, float deltaTime, const std::vector<std::vector<int>> &map);
 };

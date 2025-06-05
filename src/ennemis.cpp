@@ -14,28 +14,20 @@ void Ennemi::update(float deltaTime, const FlowField &flow, const std::vector<st
         // Si la direction initiale est bloquée, chercher une direction alternative
         if (willCollide(newX, enemy.y, map) || willCollide(enemy.x, newY, map))
         {
-            Vec2 bestDir = {0, 0};
-            int minDist = std::numeric_limits<int>::max();
+            Vec2 alternativeDir = findAlternativeDirection(enemy, flow, deltaTime, map);
 
-            // Parcourir les voisins pour trouver une direction alternative
-            for (const auto &neighbor : flow.neighbors)
+            // Si une direction alternative est trouvée, l'utiliser
+            if (alternativeDir.dx != 0 || alternativeDir.dy != 0)
             {
-                float altX = enemy.x + neighbor.dx * deltaTime * enemy.speed;
-                float altY = enemy.y + neighbor.dy * deltaTime * enemy.speed;
-
-                int nx = static_cast<int>(altX);
-                int ny = static_cast<int>(altY);
-
-                if (!willCollide(altX, altY, map) && flow.distance[ny][nx] >= 0 && flow.distance[ny][nx] < minDist)
-                {
-                    minDist = flow.distance[ny][nx];
-                    bestDir = neighbor;
-                }
+                newX = enemy.x + alternativeDir.dx * deltaTime * enemy.speed;
+                newY = enemy.y + alternativeDir.dy * deltaTime * enemy.speed;
             }
-
-            // Mettre à jour la direction avec la meilleure alternative
-            newX = enemy.x + bestDir.dx * deltaTime * enemy.speed;
-            newY = enemy.y + bestDir.dy * deltaTime * enemy.speed;
+            else
+            {
+                // Sinon, continuer dans la direction actuelle
+                newX = enemy.x + dir.dx * deltaTime * enemy.speed;
+                newY = enemy.y + dir.dy * deltaTime * enemy.speed;
+            }
         }
 
         // Appliquer le déplacement
@@ -73,7 +65,7 @@ void Ennemi::draw(const std::vector<std::vector<int>> &map)
 
 bool Ennemi::willCollide(float testX, float testY, const std::vector<std::vector<int>> &map)
 {
-    // 4 coins du carré (taille 1)
+    // Taille de l'ennemi
     float size = .99f;
     float corners[4][2] = {
         {testX, testY},
@@ -86,10 +78,12 @@ bool Ennemi::willCollide(float testX, float testY, const std::vector<std::vector
         int cx = int(corners[i][0]);
         int cy = int(corners[i][1]);
 
+        // Vérifier si hors de la carte
         if (cx < 0 || cy < 0 || cy >= map.size() || cx >= map[0].size())
-            return true; // hors map = collision
+            return true;
 
-        if (map[cy][cx] == 1 || map[cy][cx] == 3) // mur, obstacle
+        // Vérifier si la case est un mur ou un obstacle
+        if (map[cy][cx] == FULL || map[cy][cx] == OBSTACLE)
             return true;
     }
 
@@ -123,4 +117,20 @@ bool Ennemi::isCollidingWithPlayer(const Enemy &enemy, const Player &player)
            enemy.x + size > player.x &&
            enemy.y < player.y + size &&
            enemy.y + size > player.y;
+}
+
+Vec2 Ennemi::findAlternativeDirection(const Enemy &enemy, const FlowField &flow, float deltaTime, const std::vector<std::vector<int>> &map)
+{
+    for (const auto &neighbor : flow.neighbors)
+    {
+        float altX = enemy.x + neighbor.dx * deltaTime * enemy.speed;
+        float altY = enemy.y + neighbor.dy * deltaTime * enemy.speed;
+
+        if (!willCollide(altX, altY, map))
+        {
+            return neighbor;
+        }
+    }
+
+    return {0, 0}; // Retourner une direction neutre si aucune alternative n'est trouvée
 }
