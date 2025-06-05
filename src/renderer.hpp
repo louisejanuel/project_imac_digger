@@ -37,6 +37,8 @@ struct Renderer {
     Ennemi ennemi;
     float lastFrameTime;
 
+    bool isPaused = false;
+
     Renderer(int screenW, int screenH, glbasimac::GLBI_Map& mapGen, FlowField& flow, Ennemi ennemi);
     void run();
 };
@@ -47,3 +49,8 @@ bool handleQuitButtonClick(int windowWidth, int windowHeight, double xpos, doubl
 void setOverlayProjection(int windowWidth, int windowHeight);
 void setMapProjection(int mapWidth, int mapHeight);
 void drawObjectCounter(int windowWidth, int windowHeight, int score, int totalObjects);
+
+void drawPauseButton(int windowWidth, int windowHeight);
+bool handlePauseButtonClick(int windowWidth, int windowHeight, double xpos, double ypos);
+void drawPlayOverlay(int windowWidth, int windowHeight);
+bool handlePlayButtonClick(int windowWidth, int windowHeight, double xpos, double ypos);

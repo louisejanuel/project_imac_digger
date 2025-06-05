@@ -40,17 +40,24 @@ int showMenu()
 
     while (!glfwWindowShouldClose(window))
     {
+        int width, height;
+        glfwGetWindowSize(window, &width, &height);
+        glViewport(0, 0, width, height);
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glOrtho(0, width, height, 0, -1, 1);
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+
         glClear(GL_COLOR_BUFFER_BIT);
 
         double xpos, ypos;
         glfwGetCursorPos(window, &xpos, &ypos);
-        xpos = xpos * (width / (float)width);
-        ypos = ypos * (height / (float)height);
         bool leftClick = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
 
-        // Zones clic boutons (en pourcentage de la taille de la fenêtre)
-        float buttonWidth = width * 0.25f;    // 25% de la largeur de la fenêtre
-        float buttonHeight = height * 0.083f; // 8.3% de la hauteur de la fenêtre
+        // Zones clic boutons
+        float buttonWidth = width * 0.25f;
+        float buttonHeight = height * 0.083f;
         float buttonXCenter = width / 2.0f;
         float buttonYCenterPlay = height / 2.0f - buttonHeight * 1.5f;
         float buttonYCenterQuit = height / 2.0f + buttonHeight * 1.5f;
@@ -71,7 +78,7 @@ int showMenu()
             glfwSetWindowShouldClose(window, GLFW_TRUE);
         }
 
-        // Dessin des boutons (verts et rouges)
+        // Dessin des boutons
         glColor3f(0.2f, 0.8f, 0.2f);
         glBegin(GL_QUADS);
         glVertex2f(buttonXCenter - buttonWidth / 2, buttonYCenterPlay - buttonHeight / 2);
@@ -88,7 +95,7 @@ int showMenu()
         glVertex2f(buttonXCenter - buttonWidth / 2, buttonYCenterQuit + buttonHeight / 2);
         glEnd();
 
-        // Texte jaune sur boutons
+        // Texte
         glColor3f(1.0f, 1.0f, 0.0f);
         drawText(buttonXCenter - buttonWidth / 4, buttonYCenterPlay - buttonHeight / 4, "Jouer");
         drawText(buttonXCenter - buttonWidth / 4, buttonYCenterQuit - buttonHeight / 4, "Quitter");

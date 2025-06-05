@@ -175,43 +175,61 @@ void Renderer::run()
 
         glClear(GL_COLOR_BUFFER_BIT);
 
-        // Configurer la projection pour la carte
+        // Config carte
         setMapProjection(map.getGrid()[0].size(), map.getGrid().size());
 
-        // Dessiner la carte et les éléments du jeu
-        drawMap(map.getGrid());
+        if (!isPaused)
+        {
+            drawMap(map.getGrid());
 
-        auto &mapData = const_cast<std::vector<std::vector<int>> &>(map.getGrid());
-        player.update(deltaTime, mapData);
-        player.draw();
+            auto &mapData = const_cast<std::vector<std::vector<int>> &>(map.getGrid());
+            player.update(deltaTime, mapData);
+            player.draw();
 
-        int playerX = static_cast<int>(std::round(player.x));
-        int playerY = static_cast<int>(std::round(player.y));
-        flowfield.compute(playerX, playerY);
+            int playerX = static_cast<int>(std::round(player.x));
+            int playerY = static_cast<int>(std::round(player.y));
+            flowfield.compute(playerX, playerY);
 
-        ennemi.update(deltaTime, flowfield, mapData, player);
-        ennemi.draw(map.getGrid());
+            ennemi.update(deltaTime, flowfield, mapData, player);
+            ennemi.draw(map.getGrid());
+        }
+        else
+        {
+            // Pendant la pause, ne met à jour ni le joueur ni les ennemis
+        }
 
-        // Obtenir les dimensions de la fenêtre
+        // Overlay
         int windowWidth, windowHeight;
         glfwGetWindowSize(window, &windowWidth, &windowHeight);
-
-        // Configurer la projection pour l'overlay
         setOverlayProjection(windowWidth, windowHeight);
 
-        // Dessiner le bouton "Quitter"
         drawQuitButton(windowWidth, windowHeight);
-
-        // Dessiner le compteur des objets
+        drawPauseButton(windowWidth, windowHeight);
         drawObjectCounter(windowWidth, windowHeight, player.getScore(), 15);
 
-        // Gérer les clics sur le bouton "Quitter"
+        // Gérer clics
         double xpos, ypos;
         glfwGetCursorPos(window, &xpos, &ypos);
-        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS &&
-            handleQuitButtonClick(windowWidth, windowHeight, xpos, ypos))
+
+        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
         {
-            glfwSetWindowShouldClose(window, GLFW_TRUE);
+            if (handleQuitButtonClick(windowWidth, windowHeight, xpos, ypos))
+            {
+                glfwSetWindowShouldClose(window, GLFW_TRUE);
+            }
+            else if (handlePauseButtonClick(windowWidth, windowHeight, xpos, ypos))
+            {
+                isPaused = true;
+            }
+            else if (isPaused && handlePlayButtonClick(windowWidth, windowHeight, xpos, ypos))
+            {
+                isPaused = false;
+            }
+        }
+
+        if (isPaused)
+        {
+            drawPlayOverlay(windowWidth, windowHeight);
         }
 
         glfwSwapBuffers(window);
@@ -220,6 +238,7 @@ void Renderer::run()
 
     glfwTerminate();
 }
+
 
 void onWindowResized(GLFWwindow * /*window*/, int width, int height)
 {
@@ -319,6 +338,77 @@ bool handleQuitButtonClick(int windowWidth, int windowHeight, double xpos, doubl
 
     return result;
 }
+
+void drawPauseButton(int windowWidth, int windowHeight)
+{
+    float buttonWidth = windowWidth * 0.1f;
+    float buttonHeight = windowHeight * 0.05f;
+    float buttonX = 25;
+    float buttonY = 25;
+
+    glColor3f(0.2f, 0.2f, 0.8f); // Bleu
+    glBegin(GL_QUADS);
+    glVertex2f(buttonX, buttonY);
+    glVertex2f(buttonX + buttonWidth, buttonY);
+    glVertex2f(buttonX + buttonWidth, buttonY + buttonHeight);
+    glVertex2f(buttonX, buttonY + buttonHeight);
+    glEnd();
+
+    glColor3f(1.0f, 1.0f, 0.0f); // Jaune
+    drawText(buttonX + buttonWidth / 4, buttonY + buttonHeight / 4, "Pause");
+}
+
+bool handlePauseButtonClick(int windowWidth, int windowHeight, double xpos, double ypos)
+{
+    float buttonWidth = windowWidth * 0.1f;
+    float buttonHeight = windowHeight * 0.05f;
+    float buttonX = 25;
+    float buttonY = 25;
+
+    return (xpos >= buttonX && xpos <= buttonX + buttonWidth &&
+            ypos >= buttonY && ypos <= buttonY + buttonHeight);
+}
+
+void drawPlayOverlay(int windowWidth, int windowHeight)
+{
+    // Fond noir plein écran
+    glColor4f(0.0f, 0.0f, 0.0f, 0.85f);
+    glBegin(GL_QUADS);
+    glVertex2f(0, 0);
+    glVertex2f(windowWidth, 0);
+    glVertex2f(windowWidth, windowHeight);
+    glVertex2f(0, windowHeight);
+    glEnd();
+
+    // GROS bouton rouge "Play" centré
+    float buttonWidth = 200;
+    float buttonHeight = 100;
+    float buttonX = windowWidth / 2.0f - buttonWidth / 2;
+    float buttonY = windowHeight / 2.0f - buttonHeight / 2;
+
+    glColor3f(0.9f, 0.1f, 0.1f); // Rouge
+    glBegin(GL_QUADS);
+    glVertex2f(buttonX, buttonY);
+    glVertex2f(buttonX + buttonWidth, buttonY);
+    glVertex2f(buttonX + buttonWidth, buttonY + buttonHeight);
+    glVertex2f(buttonX, buttonY + buttonHeight);
+    glEnd();
+
+    glColor3f(1.0f, 1.0f, 1.0f); // Blanc
+    drawText(buttonX + 50, buttonY + 35, "PLAY");
+}
+
+bool handlePlayButtonClick(int windowWidth, int windowHeight, double xpos, double ypos)
+{
+    float buttonWidth = 200;
+    float buttonHeight = 100;
+    float buttonX = windowWidth / 2.0f - buttonWidth / 2;
+    float buttonY = windowHeight / 2.0f - buttonHeight / 2;
+
+    return (xpos >= buttonX && xpos <= buttonX + buttonWidth &&
+            ypos >= buttonY && ypos <= buttonY + buttonHeight);
+}
+
 
 void setOverlayProjection(int windowWidth, int windowHeight)
 {
