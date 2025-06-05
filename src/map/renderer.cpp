@@ -122,7 +122,7 @@ void Renderer::run()
     GLuint tex_sol = chargerTexture("assets/images/sol.png");
     GLuint tex_objet = chargerTexture("assets/images/fromage.png");
     GLuint tex_piege = chargerTexture("assets/images/trou.png");
-    GLuint tex_obstacle = chargerTexture("assets/images/chat.png");
+    GLuint tex_obstacle = chargerTexture("assets/images/obstacle.png");
 
     while (!glfwWindowShouldClose(window))
     {
