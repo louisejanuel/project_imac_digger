@@ -148,8 +148,8 @@ void drawMap(const GLBI_Map &map, GLuint tex_mur, GLuint tex_sol, GLuint tex_obj
 
 void Renderer::run()
 {
-    GLuint tex_mur = chargerTexture("assets/images/mur.jpg");
-    GLuint tex_sol = chargerTexture("assets/images/sol.jpg");
+    GLuint tex_mur = chargerTexture("assets/images/mur.png");
+    GLuint tex_sol = chargerTexture("assets/images/sol.png");
     GLuint tex_objet = chargerTexture("assets/images/fromage.png");
     GLuint tex_piege = chargerTexture("assets/images/trou.png");
     GLuint tex_obstacle = chargerTexture("assets/images/chat.png");
