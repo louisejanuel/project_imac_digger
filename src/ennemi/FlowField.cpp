@@ -21,7 +21,9 @@ void FlowField::reset()
 
 bool FlowField::isWalkable(int x, int y) const
 {
-    return y >= 0 && x >= 0 && y < map.size() && x < map[0].size() && map[y][x] == 0;
+    return y >= 0 && x >= 0 &&
+           y < map.size() && x < map[0].size() &&
+           (map[y][x] == 0 || map[y][x] == 2 || map[y][x] == 4);
 }
 
 void FlowField::compute(int targetX, int targetY)
@@ -72,26 +74,6 @@ Vec2 FlowField::getDirection(float fx, float fy) const
 {
     int x0 = int(fx), y0 = int(fy);
     int x1 = x0 + 1, y1 = y0 + 1;
-
-    // si la case actuelle n'est pas walkable, trouver une autre direction
-    if (!isWalkable(x0, y0))
-    {
-        Vec2 bestDir = {0, 0};
-        int minDist = std::numeric_limits<int>::max();
-
-        // Parcourir les voisins pour trouver le chemin le plus court
-        for (const auto &dir : neighbors)
-        {
-            int nx = x0 + dir.dx, ny = y0 + dir.dy;
-            if (isWalkable(nx, ny) && distance[ny][nx] >= 0 && distance[ny][nx] < minDist)
-            {
-                minDist = distance[ny][nx];
-                bestDir = dir;
-            }
-        }
-
-        return bestDir; // Retourner la meilleure direction trouvée
-    }
 
     // interpolation bilinéaire pour les directions, pour mettre en float les directions
     float tx = fx - x0;

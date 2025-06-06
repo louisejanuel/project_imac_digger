@@ -32,7 +32,7 @@ void Player::update(float deltaTime, std::vector<std::vector<int>> &map)
         currentDirection = UP; // Mettre à jour la direction
     }
 
-    // Si pas de mur => déplacement
+    // si y'a pas de mur alors déplacement
     if (!willCollide(newX, y, map))
         x = newX;
     if (!willCollide(x, newY, map))

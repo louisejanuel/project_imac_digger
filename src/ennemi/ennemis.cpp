@@ -14,36 +14,34 @@ void Ennemi::update(float deltaTime, const FlowField &flow, const std::vector<st
         float newX = enemy.x + dir.dx * deltaTime * enemy.speed;
         float newY = enemy.y + dir.dy * deltaTime * enemy.speed;
 
-        // Si la direction initiale est bloquée, chercher une direction alternative
-        if (willCollide(newX, enemy.y, map) || willCollide(enemy.x, newY, map))
-        {
-            Vec2 alternativeDir = findAlternativeDirection(enemy, flow, deltaTime, map);
+        // // si direction initiale bloquée, ça cherche direction alternative
+        // if (willCollide(newX, enemy.y, map) || willCollide(enemy.x, newY, map))
+        // {
+        //     Vec2 alternativeDir = findAlternativeDirection(enemy, flow, deltaTime, map);
 
-            // Si une direction alternative est trouvée, l'utiliser
-            if (alternativeDir.dx != 0 || alternativeDir.dy != 0)
-            {
-                newX = enemy.x + alternativeDir.dx * deltaTime * enemy.speed;
-                newY = enemy.y + alternativeDir.dy * deltaTime * enemy.speed;
-            }
-            else
-            {
-                // Sinon, continuer dans la direction actuelle
-                newX = enemy.x + dir.dx * deltaTime * enemy.speed;
-                newY = enemy.y + dir.dy * deltaTime * enemy.speed;
-            }
-        }
+        //     if (alternativeDir.dx != 0 || alternativeDir.dy != 0)
+        //     {
+        //         newX = enemy.x + alternativeDir.dx * deltaTime * enemy.speed;
+        //         newY = enemy.y + alternativeDir.dy * deltaTime * enemy.speed;
+        //     }
+        //     else
+        //     {
+        //         // Sinon, continuer dans la direction actuelle
+        //         newX = enemy.x + dir.dx * deltaTime * enemy.speed;
+        //         newY = enemy.y + dir.dy * deltaTime * enemy.speed;
+        //     }
+        // }
 
-        // Appliquer le déplacement
-        if (!willCollide(newX, enemy.y, map))
+
+        if (!willCollide(newX, enemy.y, map)) //applique déplac
             enemy.x = newX;
         if (!willCollide(enemy.x, newY, map))
             enemy.y = newY;
 
-        // Vérifier la collision avec le joueur
-        if (isCollidingWithPlayer(enemy, player))
+        if (isCollidingWithPlayer(enemy, player)) //collision avec joueur
         {
             std::cout << "Collision avec le joueur ! Game Over.\n";
-            showGameOver(); // Afficher l'écran de fin de partie
+            showGameOver();
             glfwSetWindowShouldClose(glfwGetCurrentContext(), GLFW_TRUE);
         }
     }
@@ -81,7 +79,7 @@ void Ennemi::draw(const std::vector<std::vector<int>> &map)
 
 bool Ennemi::willCollide(float testX, float testY, const std::vector<std::vector<int>> &map)
 {
-    // Taille de l'ennemi
+    // taille de l'ennemi
     float size = .99f;
     float corners[4][2] = {
         {testX, testY},
@@ -94,11 +92,11 @@ bool Ennemi::willCollide(float testX, float testY, const std::vector<std::vector
         int cx = int(corners[i][0]);
         int cy = int(corners[i][1]);
 
-        // Vérifier si hors de la carte
+        //hors de la carte?
         if (cx < 0 || cy < 0 || cy >= map.size() || cx >= map[0].size())
             return true;
 
-        // Vérifier si la case est un mur ou un obstacle
+        //mur ou obstacle?
         if (map[cy][cx] == FULL || map[cy][cx] == OBSTACLE)
             return true;
     }
@@ -111,7 +109,7 @@ void Ennemi::placeEnemies(int numEnemies, const std::vector<std::vector<int>> &m
     int mapHeight = map.size();
     int mapWidth = map[0].size();
 
-    enemies.clear(); // Réinitialiser la liste des ennemis
+    enemies.clear(); // réinitialiser la liste des ennemis
 
     for (int i = 0; i < numEnemies; ++i)
     {
@@ -120,7 +118,7 @@ void Ennemi::placeEnemies(int numEnemies, const std::vector<std::vector<int>> &m
         {
             enemyX = rand() % mapWidth;
             enemyY = rand() % mapHeight;
-        } while (map[enemyY][enemyX] != EMPTY); // Vérifier que la case est EMPTY
+        } while (map[enemyY][enemyX] != EMPTY); // check si la case est EMPTY
 
         enemies.emplace_back(Enemy{static_cast<float>(enemyX), static_cast<float>(enemyY), 1.0f});
     }
@@ -128,25 +126,25 @@ void Ennemi::placeEnemies(int numEnemies, const std::vector<std::vector<int>> &m
 
 bool Ennemi::isCollidingWithPlayer(const Enemy &enemy, const Player &player)
 {
-    float size = 0.99f; // Taille de l'ennemi et du joueur
+    float size = 0.99f; // de l'ennemi et du joueur
     return enemy.x < player.x + size &&
            enemy.x + size > player.x &&
            enemy.y < player.y + size &&
            enemy.y + size > player.y;
 }
 
-Vec2 Ennemi::findAlternativeDirection(const Enemy &enemy, const FlowField &flow, float deltaTime, const std::vector<std::vector<int>> &map)
-{
-    for (const auto &neighbor : flow.neighbors)
-    {
-        float altX = enemy.x + neighbor.dx * deltaTime * enemy.speed;
-        float altY = enemy.y + neighbor.dy * deltaTime * enemy.speed;
+// Vec2 Ennemi::findAlternativeDirection(const Enemy &enemy, const FlowField &flow, float deltaTime, const std::vector<std::vector<int>> &map)
+// {
+//     for (const auto &neighbor : flow.neighbors)
+//     {
+//         float altX = enemy.x + neighbor.dx * deltaTime * enemy.speed;
+//         float altY = enemy.y + neighbor.dy * deltaTime * enemy.speed;
 
-        if (!willCollide(altX, altY, map))
-        {
-            return neighbor;
-        }
-    }
+//         if (!willCollide(altX, altY, map))
+//         {
+//             return neighbor;
+//         }
+//     }
 
-    return {0, 0}; // Retourner une direction neutre si aucune alternative n'est trouvée
-}
+//     return {0, 0}; // Retourner une direction neutre si aucune alternative n'est trouvée
+// }
