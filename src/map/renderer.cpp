@@ -134,10 +134,8 @@ void Renderer::run()
         float deltaTime = currentTime - lastFrameTime;
         lastFrameTime = currentTime;
 
+        glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // Fond transparent
         glClear(GL_COLOR_BUFFER_BIT);
-        // drawMap(map.getGrid());
-
-        // auto &mapData = const_cast<std::vector<std::vector<int>> &>(map.getGrid());
 
         // Config carte
         setMapProjection(map.getGrid()[0].size(), map.getGrid().size());
@@ -329,7 +327,6 @@ void setMapProjection(int mapWidth, int mapHeight)
     glLoadIdentity();
 }
 
-
 void drawObjectCounter(int windowWidth, int windowHeight, int score, int totalObjects)
 {
     // Calcul de la position du texte
@@ -343,9 +340,9 @@ void drawObjectCounter(int windowWidth, int windowHeight, int score, int totalOb
     glColor3f(1.0f, 1.0f, 1.0f); // Blanc
 
     // === Agrandir le texte ===
-    glPushMatrix();                      // Sauvegarde la matrice actuelle
-    glTranslatef(textX, textY, 0);       // Place le texte à la bonne position
-    glScalef(2.0f, 2.0f, 1.0f);          // Augmente la taille du texte (x2 ici)
-    drawText(0, 0, text.c_str());        // Dessine le texte à l'origine (après translation)
-    glPopMatrix();                       // Restaure la matrice
+    glPushMatrix();                // Sauvegarde la matrice actuelle
+    glTranslatef(textX, textY, 0); // Place le texte à la bonne position
+    glScalef(2.0f, 2.0f, 1.0f);    // Augmente la taille du texte (x2 ici)
+    drawText(0, 0, text.c_str());  // Dessine le texte à l'origine (après translation)
+    glPopMatrix();                 // Restaure la matrice
 }

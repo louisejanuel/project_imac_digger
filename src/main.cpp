@@ -10,6 +10,8 @@ int main()
     if (!glfwInit())
         exit(-1);
 
+    // glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
+
     GLFWwindow *window = glfwCreateWindow(1500, 800, "IMAC Digger", nullptr, nullptr);
     if (!window)
     {
