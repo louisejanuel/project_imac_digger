@@ -11,9 +11,6 @@ int main()
         exit(-1);
 
     srand(static_cast<unsigned int>(time(nullptr)));
-
-    // glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
-
     GLFWwindow *window = glfwCreateWindow(1500, 800, "IMAC Digger", nullptr, nullptr);
     if (!window)
     {
@@ -21,10 +18,7 @@ int main()
         exit(-1);
     }
 
-    Menu menu(window);
-    menu.run();
-
-    if (menu.shouldPlay())
+    if (showMenu(window))
     {
         glbasimac::GLBI_Map mapGen(60, 32);
         mapGen.generate(5);

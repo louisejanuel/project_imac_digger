@@ -1,29 +1,18 @@
 #include "menu.hpp"
 #include "utils.hpp"
 
-Menu::Menu(GLFWwindow *win) : window(win), playSelected(false)
-{
-    glfwGetWindowSize(window, &width, &height);
-}
-
-bool Menu::shouldPlay() const
-{
-    return playSelected;
-}
-
-void Menu::run()
+bool showMenu(GLFWwindow *window)
 {
     glfwMakeContextCurrent(window);
     gladLoadGL();
-
     GLuint tex_menu = chargerTexture("assets/images/menu.png");
 
-    while (!glfwWindowShouldClose(window) && !playSelected)
+    while (!glfwWindowShouldClose(window))
     {
+        int width, height;
         glfwGetWindowSize(window, &width, &height);
 
         glClear(GL_COLOR_BUFFER_BIT);
-
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
         glOrtho(0, width, height, 0, -1, 1);
@@ -58,24 +47,18 @@ void Menu::run()
             double startY = 360.0 / 800.0 * height;
             double btnW = 253.0 / 1500.0 * width;
             double btnH = 96.0 / 800.0 * height;
-
             double quitX = 1109.0 / 1500.0 * width;
-            double quitY = 360.0 / 800.0 * height;
 
-            if (xpos > startX && xpos < startX + btnW &&
-                ypos > startY && ypos < startY + btnH)
-            {
-                playSelected = true;
-            }
+            if (xpos > startX && xpos < startX + btnW && ypos > startY && ypos < startY + btnH)
+                return true;
 
-            if (xpos > quitX && xpos < quitX + btnW &&
-                ypos > quitY && ypos < quitY + btnH)
-            {
+            if (xpos > quitX && xpos < quitX + btnW && ypos > startY && ypos < startY + btnH)
                 glfwSetWindowShouldClose(window, GLFW_TRUE);
-            }
         }
 
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
+
+    return false;
 }

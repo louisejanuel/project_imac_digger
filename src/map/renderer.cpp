@@ -135,7 +135,7 @@ void Renderer::run()
         float deltaTime = currentTime - lastFrameTime;
         lastFrameTime = currentTime;
 
-        glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // Fond transparent
+        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         // Config carte
@@ -155,10 +155,6 @@ void Renderer::run()
 
             ennemi.update(deltaTime, flowfield, mapData, player);
             ennemi.draw(map.getGrid());
-        }
-        else
-        {
-            // Pendant la pause, ne met à jour ni le joueur ni les ennemis
         }
 
         // Overlay
@@ -231,7 +227,6 @@ void drawQuitButton(int windowWidth, int windowHeight)
     glPopMatrix();
 }
 
-
 bool handleQuitButtonClick(int windowWidth, int windowHeight, double xpos, double ypos)
 {
     bool result = false;
@@ -276,7 +271,6 @@ void drawPauseButton(int windowWidth, int windowHeight)
     glPopMatrix();
 }
 
-
 bool handlePauseButtonClick(int windowWidth, int windowHeight, double xpos, double ypos)
 {
     float buttonWidth = windowWidth * 0.1f;
@@ -295,15 +289,18 @@ void drawPlayOverlay(int windowWidth, int windowHeight, GLuint pauseTexture)
     glColor3f(1, 1, 1);
 
     glBegin(GL_QUADS);
-    glTexCoord2f(0, 0); glVertex2f(0, 0);
-    glTexCoord2f(1, 0); glVertex2f(windowWidth, 0);
-    glTexCoord2f(1, 1); glVertex2f(windowWidth, windowHeight);
-    glTexCoord2f(0, 1); glVertex2f(0, windowHeight);
+    glTexCoord2f(0, 0);
+    glVertex2f(0, 0);
+    glTexCoord2f(1, 0);
+    glVertex2f(windowWidth, 0);
+    glTexCoord2f(1, 1);
+    glVertex2f(windowWidth, windowHeight);
+    glTexCoord2f(0, 1);
+    glVertex2f(0, windowHeight);
     glEnd();
 
     glDisable(GL_TEXTURE_2D);
 }
-
 
 bool handlePlayButtonClick(int windowWidth, int windowHeight, double xpos, double ypos)
 {
@@ -327,7 +324,6 @@ bool handlePlayButtonClick(int windowWidth, int windowHeight, double xpos, doubl
 
     return (dx * dx) / (radiusX * radiusX) + (dy * dy) / (radiusY * radiusY) <= 1.0f;
 }
-
 
 void setOverlayProjection(int windowWidth, int windowHeight)
 {
@@ -357,9 +353,9 @@ void drawObjectCounter(int windowWidth, int windowHeight, int score, int totalOb
     std::string text = "Score : " + std::to_string(score) + " / " + std::to_string(totalObjects);
 
     // Couleur du texte
-    glColor3f(1.0f, 1.0f, 1.0f); 
+    glColor3f(1.0f, 1.0f, 1.0f);
 
-    // Agrandir le texte 
+    // Agrandir le texte
     glPushMatrix();                // Sauvegarde la matrice actuelle
     glTranslatef(textX, textY, 0); // Place le texte à la bonne position
     glScalef(2.0f, 2.0f, 1.0f);    // Augmente la taille du texte (x2 ici)
