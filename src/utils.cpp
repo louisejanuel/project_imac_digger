@@ -1,6 +1,6 @@
 #include "utils.hpp"
 
-// Définition des variables globales
+//variables globales
 GLBI_Engine myEngine;
 
 const float GL_VIEW_SIZE = 1.;
