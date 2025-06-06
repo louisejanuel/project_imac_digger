@@ -127,6 +127,7 @@ void Renderer::run()
     GLuint tex_objet = chargerTexture("assets/images/fromage.png");
     GLuint tex_piege = chargerTexture("assets/images/trou.png");
     GLuint tex_obstacle = chargerTexture("assets/images/obstacle.png");
+    GLuint tex_pause = chargerTexture("assets/images/pause.png");
 
     while (!glfwWindowShouldClose(window))
     {
@@ -191,7 +192,7 @@ void Renderer::run()
 
         if (isPaused)
         {
-            drawPlayOverlay(windowWidth, windowHeight);
+            drawPlayOverlay(windowWidth, windowHeight, tex_pause);
         }
 
         glfwSwapBuffers(window);
@@ -202,15 +203,15 @@ void Renderer::run()
 void drawQuitButton(int windowWidth, int windowHeight)
 {
     // Dimensions du bouton
-    float buttonWidth = windowWidth * 0.1f;    // 10% de la largeur de la fenêtre
-    float buttonHeight = windowHeight * 0.05f; // 5% de la hauteur de la fenêtre
+    float buttonWidth = windowWidth * 0.1f;
+    float buttonHeight = windowHeight * 0.05f;
 
     // Position du bouton (en haut à droite)
-    float buttonX = windowWidth - buttonWidth - 25; // 10 pixels de marge
-    float buttonY = 25;                             // 10 pixels de marge depuis le haut
+    float buttonX = windowWidth - buttonWidth - 25;
+    float buttonY = 25;
 
-    // Dessin du bouton (rouge)
-    glColor3f(0.8f, 0.2f, 0.2f);
+    // Dessin du bouton
+    glColor3f(0.847f, 0.435f, 0.0f);
     glBegin(GL_QUADS);
     glVertex2f(buttonX, buttonY);
     glVertex2f(buttonX + buttonWidth, buttonY);
@@ -218,10 +219,18 @@ void drawQuitButton(int windowWidth, int windowHeight)
     glVertex2f(buttonX, buttonY + buttonHeight);
     glEnd();
 
-    // Texte "Quitter" (jaune)
-    glColor3f(1.0f, 1.0f, 0.0f);
-    drawText(buttonX + buttonWidth / 4, buttonY + buttonHeight / 4, "Quitter");
+    // Taille du texte responsive : basé sur la hauteur de la fenêtre
+    float textScale = windowHeight / 600.0f; // facteur adaptatif (600 = hauteur de référence)
+
+    // Texte "Quitter" centré et mis à l’échelle
+    glColor3f(0.0f, 0.0f, 0.0f);
+    glPushMatrix();
+    glTranslatef(buttonX + buttonWidth / 4, buttonY + buttonHeight / 4, 0);
+    glScalef(textScale, textScale, 1.0f); // Taille relative à la fenêtre
+    drawText(0, 0, "Quitter");
+    glPopMatrix();
 }
+
 
 bool handleQuitButtonClick(int windowWidth, int windowHeight, double xpos, double ypos)
 {
@@ -246,7 +255,8 @@ void drawPauseButton(int windowWidth, int windowHeight)
     float buttonX = 25;
     float buttonY = 25;
 
-    glColor3f(0.2f, 0.2f, 0.8f); // Bleu
+    // Fond du bouton
+    glColor3f(0.847f, 0.435f, 0.0f);
     glBegin(GL_QUADS);
     glVertex2f(buttonX, buttonY);
     glVertex2f(buttonX + buttonWidth, buttonY);
@@ -254,9 +264,18 @@ void drawPauseButton(int windowWidth, int windowHeight)
     glVertex2f(buttonX, buttonY + buttonHeight);
     glEnd();
 
-    glColor3f(1.0f, 1.0f, 0.0f); // Jaune
-    drawText(buttonX + buttonWidth / 4, buttonY + buttonHeight / 4, "Pause");
+    // Mise à l’échelle responsive du texte
+    float textScale = windowHeight / 600.0f; // base 600px
+
+    glColor3f(0.0f, 0.0f, 0.0f); // Texte noir
+
+    glPushMatrix();
+    glTranslatef(buttonX + buttonWidth / 4, buttonY + buttonHeight / 4, 0);
+    glScalef(textScale, textScale, 1.0f); // Responsive
+    drawText(0, 0, "Pause");
+    glPopMatrix();
 }
+
 
 bool handlePauseButtonClick(int windowWidth, int windowHeight, double xpos, double ypos)
 {
@@ -269,45 +288,46 @@ bool handlePauseButtonClick(int windowWidth, int windowHeight, double xpos, doub
             ypos >= buttonY && ypos <= buttonY + buttonHeight);
 }
 
-void drawPlayOverlay(int windowWidth, int windowHeight)
+void drawPlayOverlay(int windowWidth, int windowHeight, GLuint pauseTexture)
 {
-    // Fond noir plein écran
-    glColor4f(0.0f, 0.0f, 0.0f, 0.85f);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, pauseTexture);
+    glColor3f(1, 1, 1);
+
     glBegin(GL_QUADS);
-    glVertex2f(0, 0);
-    glVertex2f(windowWidth, 0);
-    glVertex2f(windowWidth, windowHeight);
-    glVertex2f(0, windowHeight);
+    glTexCoord2f(0, 0); glVertex2f(0, 0);
+    glTexCoord2f(1, 0); glVertex2f(windowWidth, 0);
+    glTexCoord2f(1, 1); glVertex2f(windowWidth, windowHeight);
+    glTexCoord2f(0, 1); glVertex2f(0, windowHeight);
     glEnd();
 
-    // GROS bouton rouge "Play" centré
-    float buttonWidth = 200;
-    float buttonHeight = 100;
-    float buttonX = windowWidth / 2.0f - buttonWidth / 2;
-    float buttonY = windowHeight / 2.0f - buttonHeight / 2;
-
-    glColor3f(0.9f, 0.1f, 0.1f); // Rouge
-    glBegin(GL_QUADS);
-    glVertex2f(buttonX, buttonY);
-    glVertex2f(buttonX + buttonWidth, buttonY);
-    glVertex2f(buttonX + buttonWidth, buttonY + buttonHeight);
-    glVertex2f(buttonX, buttonY + buttonHeight);
-    glEnd();
-
-    glColor3f(1.0f, 1.0f, 1.0f); // Blanc
-    drawText(buttonX + 50, buttonY + 35, "PLAY");
+    glDisable(GL_TEXTURE_2D);
 }
+
 
 bool handlePlayButtonClick(int windowWidth, int windowHeight, double xpos, double ypos)
 {
-    float buttonWidth = 200;
-    float buttonHeight = 100;
-    float buttonX = windowWidth / 2.0f - buttonWidth / 2;
-    float buttonY = windowHeight / 2.0f - buttonHeight / 2;
+    // Centre du bouton PLAY en pourcentage de l'image de fond (1500x800)
+    const float centerXPct = 0.726f;
+    const float centerYPct = 0.36875f;
 
-    return (xpos >= buttonX && xpos <= buttonX + buttonWidth &&
-            ypos >= buttonY && ypos <= buttonY + buttonHeight);
+    // Rayon horizontal et vertical en pourcentage
+    const float radiusXPct = 0.1146f;
+    const float radiusYPct = 0.215f;
+
+    // Conversion en pixels selon la taille réelle de la fenêtre
+    float centerX = centerXPct * windowWidth;
+    float centerY = centerYPct * windowHeight;
+    float radiusX = radiusXPct * windowWidth;
+    float radiusY = radiusYPct * windowHeight;
+
+    // Test de collision dans un cercle/ellipse centré
+    float dx = xpos - centerX;
+    float dy = ypos - centerY;
+
+    return (dx * dx) / (radiusX * radiusX) + (dy * dy) / (radiusY * radiusY) <= 1.0f;
 }
+
 
 void setOverlayProjection(int windowWidth, int windowHeight)
 {

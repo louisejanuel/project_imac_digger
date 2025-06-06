@@ -30,7 +30,7 @@ void drawObjectCounter(int windowWidth, int windowHeight, int score, int totalOb
 
 void drawPauseButton(int windowWidth, int windowHeight);
 bool handlePauseButtonClick(int windowWidth, int windowHeight, double xpos, double ypos);
-void drawPlayOverlay(int windowWidth, int windowHeight);
+void drawPlayOverlay(int windowWidth, int windowHeight, GLuint pauseTexture);
 bool handlePlayButtonClick(int windowWidth, int windowHeight, double xpos, double ypos);
 GLuint chargerTexture(const char *filename);
 
