@@ -6,7 +6,7 @@ namespace glbasimac
     GLBI_Map::GLBI_Map(int w, int h, float prob)
         : width(w), height(h), fill_prob(prob)
     {
-        assert(fill_prob >= 0.0f && fill_prob <= 1.0f);
+        assert(fill_prob >= 0.3f && fill_prob <= 0.7f);
         generateInitialMap();
     }
 
@@ -50,7 +50,7 @@ namespace glbasimac
                 for (int x = 0; x < width; ++x)
                 {
                     int neighbors = countFilledNeighbors(x, y);
-                    if (grid[y][x] == 1)
+                    if (grid[y][x] == FULL)
                     {
                         new_grid[y][x] = (neighbors >= 5) ? FULL : EMPTY;
                     }

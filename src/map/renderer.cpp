@@ -215,14 +215,11 @@ void drawQuitButton(int windowWidth, int windowHeight)
     glVertex2f(buttonX, buttonY + buttonHeight);
     glEnd();
 
-    // Taille du texte responsive : basé sur la hauteur de la fenêtre
-    float textScale = windowHeight / 600.0f; // facteur adaptatif (600 = hauteur de référence)
-
-    // Texte "Quitter" centré et mis à l’échelle
+    float textScale = windowHeight / 600.0f; 
     glColor3f(0.0f, 0.0f, 0.0f);
     glPushMatrix();
     glTranslatef(buttonX + buttonWidth / 4, buttonY + buttonHeight / 4, 0);
-    glScalef(textScale, textScale, 1.0f); // Taille relative à la fenêtre
+    glScalef(textScale, textScale, 1.0f); 
     drawText(0, 0, "Quitter");
     glPopMatrix();
 }
@@ -230,11 +227,9 @@ void drawQuitButton(int windowWidth, int windowHeight)
 bool handleQuitButtonClick(int windowWidth, int windowHeight, double xpos, double ypos)
 {
     bool result = false;
-    // Dimensions du bouton
     float buttonWidth = windowWidth * 0.1f;
     float buttonHeight = windowHeight * 0.05f;
 
-    // Position du bouton
     float buttonX = windowWidth - buttonWidth - 10;
     float buttonY = 10;
 
@@ -250,7 +245,6 @@ void drawPauseButton(int windowWidth, int windowHeight)
     float buttonX = 25;
     float buttonY = 25;
 
-    // Fond du bouton
     glColor3f(0.847f, 0.435f, 0.0f);
     glBegin(GL_QUADS);
     glVertex2f(buttonX, buttonY);
@@ -260,13 +254,13 @@ void drawPauseButton(int windowWidth, int windowHeight)
     glEnd();
 
     // Mise à l’échelle responsive du texte
-    float textScale = windowHeight / 600.0f; // base 600px
+    float textScale = windowHeight / 600.0f; 
 
-    glColor3f(0.0f, 0.0f, 0.0f); // Texte noir
+    glColor3f(0.0f, 0.0f, 0.0f); 
 
     glPushMatrix();
     glTranslatef(buttonX + buttonWidth / 4, buttonY + buttonHeight / 4, 0);
-    glScalef(textScale, textScale, 1.0f); // Responsive
+    glScalef(textScale, textScale, 1.0f); 
     drawText(0, 0, "Pause");
     glPopMatrix();
 }
@@ -312,13 +306,11 @@ bool handlePlayButtonClick(int windowWidth, int windowHeight, double xpos, doubl
     const float radiusXPct = 0.1146f;
     const float radiusYPct = 0.215f;
 
-    // Conversion en pixels selon la taille réelle de la fenêtre
     float centerX = centerXPct * windowWidth;
     float centerY = centerYPct * windowHeight;
     float radiusX = radiusXPct * windowWidth;
     float radiusY = radiusYPct * windowHeight;
 
-    // Test de collision dans un cercle/ellipse centré
     float dx = xpos - centerX;
     float dy = ypos - centerY;
 
@@ -329,7 +321,7 @@ void setOverlayProjection(int windowWidth, int windowHeight)
 {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glOrtho(0, windowWidth, windowHeight, 0, -1, 1); // Projection en pixels
+    glOrtho(0, windowWidth, windowHeight, 0, -1, 1); 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 }
@@ -338,27 +330,23 @@ void setMapProjection(int mapWidth, int mapHeight)
 {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glOrtho(0, mapWidth, mapHeight, 0, -1, 1); // Projection basée sur les dimensions de la carte
+    glOrtho(0, mapWidth, mapHeight, 0, -1, 1); 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 }
 
 void drawObjectCounter(int windowWidth, int windowHeight, int score, int totalObjects)
 {
-    // Calcul de la position du texte
-    float textX = windowWidth / 2.0f - 50; // Position horizontale approximative
-    float textY = 30;                      // Position verticale (en haut)
+    float textX = windowWidth / 2.0f - 50; 
+    float textY = 30;                      
 
-    // Création du texte
     std::string text = "Score : " + std::to_string(score) + " / " + std::to_string(totalObjects);
 
-    // Couleur du texte
     glColor3f(1.0f, 1.0f, 1.0f);
 
-    // Agrandir le texte
-    glPushMatrix();                // Sauvegarde la matrice actuelle
-    glTranslatef(textX, textY, 0); // Place le texte à la bonne position
-    glScalef(2.0f, 2.0f, 1.0f);    // Augmente la taille du texte (x2 ici)
-    drawText(0, 0, text.c_str());  // Dessine le texte à l'origine (après translation)
-    glPopMatrix();                 // Restaure la matrice
+    glPushMatrix();                
+    glTranslatef(textX, textY, 0); 
+    glScalef(2.0f, 2.0f, 1.0f);    
+    drawText(0, 0, text.c_str());  
+    glPopMatrix();                 
 }
