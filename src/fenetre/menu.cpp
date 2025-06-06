@@ -1,5 +1,4 @@
 #include "menu.hpp"
-#include "utils.hpp"
 
 bool showMenu(GLFWwindow *window)
 {
