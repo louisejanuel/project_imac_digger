@@ -357,9 +357,9 @@ void drawObjectCounter(int windowWidth, int windowHeight, int score, int totalOb
     std::string text = "Score : " + std::to_string(score) + " / " + std::to_string(totalObjects);
 
     // Couleur du texte
-    glColor3f(1.0f, 1.0f, 1.0f); // Blanc
+    glColor3f(1.0f, 1.0f, 1.0f); 
 
-    // === Agrandir le texte ===
+    // Agrandir le texte 
     glPushMatrix();                // Sauvegarde la matrice actuelle
     glTranslatef(textX, textY, 0); // Place le texte à la bonne position
     glScalef(2.0f, 2.0f, 1.0f);    // Augmente la taille du texte (x2 ici)
