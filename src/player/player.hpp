@@ -18,7 +18,7 @@ struct Player {
     float x, y;
     float speed;
     float size;
-    Direction currentDirection; // Direction actuelle du joueur
+    Direction currentDirection; // current direction du joueur pour le minage
 
     bool willCollide(float newX, float newY, const std::vector<std::vector<int>>& map);
     GLuint tex;

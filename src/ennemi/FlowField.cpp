@@ -73,7 +73,7 @@ Vec2 FlowField::getDirection(float fx, float fy) const
     int x0 = int(fx), y0 = int(fy);
     int x1 = x0 + 1, y1 = y0 + 1;
 
-    // Si la case actuelle n'est pas walkable, trouver une direction alternative
+    // si la case actuelle n'est pas walkable, trouver une autre direction
     if (!isWalkable(x0, y0))
     {
         Vec2 bestDir = {0, 0};
@@ -93,7 +93,7 @@ Vec2 FlowField::getDirection(float fx, float fy) const
         return bestDir; // Retourner la meilleure direction trouvée
     }
 
-    // Interpolation bilinéaire pour les directions
+    // interpolation bilinéaire pour les directions, pour mettre en float les directions
     float tx = fx - x0;
     float ty = fy - y0;
 
