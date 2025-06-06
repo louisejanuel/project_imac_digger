@@ -39,6 +39,8 @@ using namespace glbasimac;
 
 void drawText(float x, float y, const char *text);
 void showGameOver();
+void showGameWon();
+bool showMenu(GLFWwindow* window);
 
 void onWindowResized(GLFWwindow * /*window*/, int width, int height);
 GLuint chargerTexture(const char* filename);

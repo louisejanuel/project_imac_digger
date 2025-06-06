@@ -1,6 +1,4 @@
 #include "player.hpp"
-#include "gameWon.hpp"
-#include "gameOver.hpp"
 #include "ennemis.hpp"
 
 Player::Player(float x, float y, float size)

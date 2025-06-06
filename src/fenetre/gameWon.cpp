@@ -1,5 +1,4 @@
-#include "gameWon.hpp"
-#include "utils.hpp" // pour chargerTexture()
+#include "utils.hpp" 
 
 void showGameWon()
 {
