@@ -10,6 +10,8 @@ int main()
     if (!glfwInit())
         exit(-1);
 
+    srand(static_cast<unsigned int>(time(nullptr)));
+
     // glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
 
     GLFWwindow *window = glfwCreateWindow(1500, 800, "IMAC Digger", nullptr, nullptr);
